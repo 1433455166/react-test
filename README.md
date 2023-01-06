@@ -68,3 +68,12 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+使用 react 路由，将各个组件分割出来
+
+### TODO
+- 使用 ts 
+ - 需要重新创建项目
+- 使用路由
+- 自己写接口
+- vue
