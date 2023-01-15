@@ -10,6 +10,7 @@ import "./App.css";
 import Other from "./components/Other";
 import TodoList from "./components/TodoList";
 import TodoListTwo from "./components/TodoListTwo";
+import Error from "./components/404";
 
 const items = [
   {
@@ -86,6 +87,8 @@ function App() {
         <Route path="/todoList" exact component={TodoList} />
         <Route path="/todoListTwo" exact component={TodoListTwo} />
         <Route path="/other" exact component={Other} />
+        {/* 404 页面 */}
+        <Route component={Error} />
         <Redirect from="/" to="/todoListTwo" />
       </HashRouter>
     </div>
