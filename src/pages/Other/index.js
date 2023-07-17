@@ -1,7 +1,7 @@
 import React from "react";
-import { TextFolding } from "../TextFolding";
-import { EventCountdown } from "../EventCountdown";
-import TextEllipsis from "../TextEllipsis";
+import { TextFolding } from "../../components/TextFolding";
+import { EventCountdown } from "../../components/EventCountdown";
+import TextEllipsis from "../../components/TextEllipsis";
 
 function App() {
   return (
