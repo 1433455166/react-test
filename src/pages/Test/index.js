@@ -1,5 +1,6 @@
 import { Select, Space } from "antd";
 import { Content } from "antd/es/layout/layout";
+import { FILTER_OPTION } from "../../constants";
 import React from "react";
 import "./index.css";
 
@@ -10,10 +11,10 @@ function App() {
       <Content>
         <h1>filter</h1>
         <Space>
-          <Select placeholder="左值" style={{ width: 120 }} />
+          <Select placeholder="左值" options={FILTER_OPTION} style={{ width: 120 }} />
           <Select placeholder="操作符" style={{ width: 120 }} />
           <Select placeholder="值类型" style={{ width: 120 }} />
-          <Select placeholder="右值" style={{ width: 120 }} />
+          <Select placeholder="右值" options={FILTER_OPTION} style={{ width: 120 }} />
         </Space>
         <h1>滚动</h1>
         <div className="g-wrap">
