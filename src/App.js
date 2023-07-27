@@ -13,6 +13,7 @@ import Other from "./pages/Other";
 import TodoList from "./pages/TodoList";
 import TodoListTwo from "./pages/TodoListTwo";
 import Test from "./pages/Test";
+import Game from "./pages/Game";
 import Error from "./components/404";
 
 const items = [
@@ -35,6 +36,11 @@ const items = [
   {
     label: <a href="#/test">组件测试</a>,
     key: "test",
+    icon: <VerticalLeftOutlined />,
+  },
+  {
+    label: <a href="#/game">游戏</a>,
+    key: "game",
     icon: <VerticalLeftOutlined />,
   },
   {
@@ -75,7 +81,7 @@ const items = [
 ];
 
 function App() {
-  const [current, setCurrent] = useState("todoListTwo");
+  const [current, setCurrent] = useState("game");
   const onClick = (e) => setCurrent(e.key);
 
   return (
@@ -93,10 +99,14 @@ function App() {
         <Route path="/todoList" exact component={TodoList} />
         <Route path="/todoListTwo" exact component={TodoListTwo} />
         <Route path="/test" exact component={Test} />
+        <Route path="/game" exact component={Game} />
+        <Route path="/game/plane" exact component={Game} />
+        <Route path="/game/bouncyBall" exact component={Game} />
         <Route path="/other" exact component={Other} />
         {/* 404 页面 */}
         {/* <Route component={Error} /> */}
-        <Redirect from="/" to="/todoListTwo" />
+        <Redirect from="/" to="/game" />
+        {/* <Redirect from="/game" to="/game/plane" /> */}
       </HashRouter>
     </div>
   );

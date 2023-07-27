@@ -72,7 +72,6 @@ const TodoList = () => {
         dataSource={list}
         renderItem={(item) => {
           // 遍历 dataSource 的数据，返回需要渲染的数据
-          console.log("item", item);
           return (
             <List.Item
               actions={[

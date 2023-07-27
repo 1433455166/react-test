@@ -1,0 +1,24 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+.planebox {
+    width: 320px;
+    height: 568px;
+    margin: 50px auto;
+    background: url(img/background.png) repeat-y center center;
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+}
+
+.planebox span {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+.planebox span strong {
+    font-weight: normal;
+}
