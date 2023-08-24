@@ -12,11 +12,6 @@ const App = () => {
   useEffect(() => {
     // 1.获取元素
     const planebox = ReactDOM.findDOMNode(myRef.current);
-    console.log({
-      planebox,
-      myRef,
-    });
-    // const planebox = document.querySelector(".planebox");
     const score = document.querySelector(".planebox strong");
     let allscore = 0; // 计算总分
     const ranNum = (min, max) => {
@@ -69,7 +64,6 @@ const App = () => {
       bulletMove() {
         this.timer = setInterval(() => {
           //子弹运动，一个子弹一个定时器
-
           this.y -= 3;
           if (this.y <= -this.h) {
             //判断子弹除了盒子区域
@@ -78,7 +72,6 @@ const App = () => {
           }
           this.roleimg.style.top = this.y + "px";
           this.bullethit(); //子弹碰撞敌机,子弹运动的过程中进行碰撞检测。
-          // }, 1000 / 60);
         }, 1000 / 600);
       }
 
@@ -245,8 +238,7 @@ const App = () => {
               }
               shoot();
               clearInterval(shoottimer); //防止定时器事件下面的叠加
-              // shoottimer = setInterval(shoot, 200); //每隔200ms产生一个子弹
-              shoottimer = setInterval(shoot, 20); //每隔20ms产生一个子弹
+              shoottimer = setInterval(shoot, 20); // 每隔20ms产生一个子弹
             }
           }
         }
@@ -394,7 +386,6 @@ const App = () => {
     // 按下空格暂停
     document.addEventListener("keydown", function () {
       var ev = ev || window.event;
-
       if (ev.keyCode === 32) {
         clearInterval(bgtimer);
         clearInterval(timer);
@@ -410,7 +401,6 @@ const App = () => {
       require("./img/myplaneBoom.gif")
     );
   }, []);
-  console.log("飞机大战");
 
   return (
     <div className="App">

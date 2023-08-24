@@ -14,7 +14,7 @@ import TodoList from "./pages/TodoList";
 import TodoListTwo from "./pages/TodoListTwo";
 import Test from "./pages/Test";
 import Game from "./pages/Game";
-import Error from "./components/404";
+// import Error from "./components/404";
 
 const items = [
   {
@@ -102,6 +102,7 @@ function App() {
         <Route path="/game" exact component={Game} />
         <Route path="/game/plane" exact component={Game} />
         <Route path="/game/bouncyBall" exact component={Game} />
+        <Route path="/game/gobang" exact component={Game} />
         <Route path="/other" exact component={Other} />
         {/* 404 页面 */}
         {/* <Route component={Error} /> */}

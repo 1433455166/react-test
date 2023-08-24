@@ -2,6 +2,7 @@ import { Menu } from "antd";
 import React, { useState } from "react";
 import Plane from "./Plane";
 import BouncyBall from "./BouncyBall";
+import Gobang from "./Gobang";
 import {
   AppstoreOutlined,
   MailOutlined,
@@ -21,6 +22,12 @@ function Game() {
     {
       label: <a href="#/game/bouncyBall">弹弹球</a>,
       key: "bouncyBall",
+      icon: <AppstoreOutlined />,
+      // disabled: true, // 是否可选
+    },
+    {
+      label: <a href="#/game/gobang">五子棋</a>,
+      key: "gobang",
       icon: <AppstoreOutlined />,
       // disabled: true, // 是否可选
     },
@@ -67,6 +74,8 @@ function Game() {
         return <Plane />;
       case "bouncyBall":
         return <BouncyBall />;
+        case "gobang":
+          return <Gobang />;
       default:
         <div />;
     }
