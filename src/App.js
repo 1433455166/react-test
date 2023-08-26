@@ -8,12 +8,14 @@ import {
   VerticalLeftOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
+import { amountConversion } from "lz-js-tools";
 import "./App.css";
+import TestOther from "./pages/Test/Other";
 import Other from "./pages/Other";
 import TodoList from "./pages/TodoList";
 import TodoListTwo from "./pages/TodoListTwo";
-import Test from "./pages/Test";
 import Game from "./pages/Game";
+import Filter from "./pages/Test/Filter";
 // import Error from "./components/404";
 
 const items = [
@@ -81,9 +83,10 @@ const items = [
 ];
 
 function App() {
-  const [current, setCurrent] = useState("game");
+  const [current, setCurrent] = useState("test");
   const onClick = (e) => setCurrent(e.key);
-
+  // js工具包测试
+  console.log({ money: amountConversion(1000000.0) });
   return (
     <div className="App">
       <div>
@@ -98,7 +101,10 @@ function App() {
         {/* 跳转TodoList组件 */}
         <Route path="/todoList" exact component={TodoList} />
         <Route path="/todoListTwo" exact component={TodoListTwo} />
-        <Route path="/test" exact component={Test} />
+        <Route path="/" exact component={Filter} /> {/* 默认路由 */}
+        <Route path="/test" exact component={Filter} />
+        <Route path="/test/filter" exact component={Filter} />
+        <Route path="/test/other" exact component={TestOther} />
         <Route path="/game" exact component={Game} />
         <Route path="/game/plane" exact component={Game} />
         <Route path="/game/bouncyBall" exact component={Game} />
@@ -106,7 +112,8 @@ function App() {
         <Route path="/other" exact component={Other} />
         {/* 404 页面 */}
         {/* <Route component={Error} /> */}
-        <Redirect from="/" to="/game" />
+        <Redirect from="/" to="/test/filter" />
+        <Redirect from="/test" to="/test/filter" />
         {/* <Redirect from="/game" to="/game/plane" /> */}
       </HashRouter>
     </div>
