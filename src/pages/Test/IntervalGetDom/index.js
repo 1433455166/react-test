@@ -28,10 +28,6 @@ const Other = () => {
     <div className="filter-wrap">
       <NavLeft />
       <div>
-        <h1>滚动</h1>
-        <div className="g-wrap">
-          <div className="g-content" />
-        </div>
         <h1>定时器中获取dom</h1>
         <input ref={inputRef} />
       </div>

@@ -10,12 +10,13 @@ import {
 import { Menu } from "antd";
 import { amountConversion } from "lz-js-tools";
 import "./App.css";
-import TestOther from "./pages/Test/Other";
+import IntervalGetDom from "./pages/Test/IntervalGetDom";
 import Other from "./pages/Other";
 import TodoList from "./pages/TodoList";
 import TodoListTwo from "./pages/TodoListTwo";
 import Game from "./pages/Game";
 import Filter from "./pages/Test/Filter";
+import Roll from "./pages/Test/Roll";
 // import Error from "./components/404";
 
 const items = [
@@ -88,7 +89,7 @@ function App() {
   // js工具包测试
   console.log({ money: amountConversion(1000000.0) });
   return (
-    <div className="App">
+    <div className="app">
       <div>
         <Menu
           onClick={onClick}
@@ -97,25 +98,29 @@ function App() {
           items={items}
         />
       </div>
-      <HashRouter>
-        {/* 跳转TodoList组件 */}
-        <Route path="/todoList" exact component={TodoList} />
-        <Route path="/todoListTwo" exact component={TodoListTwo} />
-        <Route path="/" exact component={Filter} /> {/* 默认路由 */}
-        <Route path="/test" exact component={Filter} />
-        <Route path="/test/filter" exact component={Filter} />
-        <Route path="/test/other" exact component={TestOther} />
-        <Route path="/game" exact component={Game} />
-        <Route path="/game/plane" exact component={Game} />
-        <Route path="/game/bouncyBall" exact component={Game} />
-        <Route path="/game/gobang" exact component={Game} />
-        <Route path="/other" exact component={Other} />
-        {/* 404 页面 */}
-        {/* <Route component={Error} /> */}
-        <Redirect from="/" to="/test/filter" />
-        <Redirect from="/test" to="/test/filter" />
-        {/* <Redirect from="/game" to="/game/plane" /> */}
-      </HashRouter>
+      <div className="app-content">
+        <HashRouter>
+          {/* 跳转TodoList组件 */}
+          <Route path="/todoList" exact component={TodoList} />
+          <Route path="/todoListTwo" exact component={TodoListTwo} />
+          <Route path="/" exact component={Filter} /> {/* 默认路由 */}
+          <Route path="/test" exact component={Filter} />
+          <Route path="/test/filter" exact component={Filter} />
+          <Route path="/test/intervalGetDom" exact component={IntervalGetDom} />
+          <Route path="/test/roll" exact component={Roll} />
+          <Route path="/game" exact component={Game} />
+          <Route path="/game/plane" exact component={Game} />
+          <Route path="/game/bouncyBall" exact component={Game} />
+          <Route path="/game/gobang" exact component={Game} />
+          <Route path="/other" exact component={Other} />
+          {/* 404 页面 */}
+          {/* <Route component={Error} /> */}
+          <Redirect from="/" to="/test/filter" />
+          <Redirect from="/test" to="/test/filter" />
+          {/* <Redirect from="/game" to="/game/plane" /> */}
+        </HashRouter>
+      </div>
+      <div className="app-footer">1433455166@qq.com版权所有</div>
     </div>
   );
 }

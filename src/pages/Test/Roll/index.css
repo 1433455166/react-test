@@ -1,0 +1,16 @@
+.filter-wrap {
+  display: flex;
+}
+
+.g-wrap {
+  width: 400px;
+  height: 400px;
+  background: #ccc;
+  overflow: scroll;
+}
+
+.g-content {
+  width: 400px;
+  height: 600px;
+  background-image: linear-gradient(red, yellow);
+}
