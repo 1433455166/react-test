@@ -20,13 +20,10 @@ const items = [
   },
 ];
 
-const NavLeft = ({ current, setCurrent }) => {
-  const onClick = (e) => setCurrent(e.key);
+const NavLeft = () => {
   return (
     <Menu
-      onClick={onClick}
       style={{ width: 256 }}
-      selectedKeys={[current]}
       items={items}
       mode="inline"
     />
