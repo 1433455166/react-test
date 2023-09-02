@@ -73,8 +73,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - 使用 react 路由，将各个组件分割出来
 - feat 写错了，写成 fest，好尴尬
 - 20230902 多云 周六
-发现本地的node接口跨域了，试了一下用 setupProxy 文件配置代理问题，结果把代码删掉过后本地项目都起不来。。
-后来删掉了 setupProxy 文件就可以跑了，setupProxy 文件配置还是有点问题，不过现在问题解决了
+接入了接口
 
 # TODO
 - 修改数据 默认值未展示

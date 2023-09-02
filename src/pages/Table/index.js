@@ -17,6 +17,35 @@ const App = () => {
         console.log("失败了", error);
       }
     );
+    const data = {
+      key1: "value1",
+      key2: "value2",
+    };
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      timeout: 5000, // 设置超时时间为5秒
+    };
+
+    axios
+      .post("/api/test", JSON.stringify(data), config)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        // 报错处理
+        if (error.code === "ECONNABORTED") {
+          console.error("请求超时！");
+        } else if (error.response) {
+          console.error("服务器错误:", error.response.data);
+        } else if (error.request) {
+          console.error("请求错误:", error.request);
+        } else {
+          console.error("未知错误:", error.message);
+        }
+      });
   }, []);
   return (
     <Table dataSource={data}>
