@@ -2,10 +2,11 @@
 import React from "react";
 import { Card, Form, Button, Input } from "antd";
 import axios from "axios";
+import getUniqueId from "../../../utils/getUniqueId";
 import "./index.css";
 
 const EditPage = (props) => {
-  const { setIsEdit, getQuary } = props;
+  const { setIsEdit, getQuary, recordValue } = props;
 
   const config = {
     headers: {
@@ -14,6 +15,31 @@ const EditPage = (props) => {
     timeout: 5000, // 设置超时时间为5秒
   };
   const type = "新增";
+
+  const editClick = (params) => {
+    axios
+    .post(
+      "/api/coc.edit",
+      JSON.stringify({ ...recordValue, ...params }),
+      config
+    )
+    .then(() => {
+      getQuary();
+    })
+    .catch((error) => {
+      // 报错处理
+      if (error.code === "ECONNABORTED") {
+        console.error("请求超时！");
+      } else if (error.response) {
+        console.error("服务器错误:", error.response.data);
+      } else if (error.request) {
+        console.error("请求错误:", error.request);
+      } else {
+        console.error("未知错误:", error.message);
+      }
+    });
+  }
+
   return (
     <Card>
       <div className="top-wrap">
@@ -24,9 +50,13 @@ const EditPage = (props) => {
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
-        initialValues={{ remember: true }}
-        onFinish={(value) => {
-          axios
+        initialValues={recordValue}
+        onFinish={(params) => {
+          const value = { ...params, id: getUniqueId()}
+          if (recordValue) {
+            editClick(params)
+          } else {
+            axios
             .post("/api/coc.add", JSON.stringify(value), config)
             .then(() => {
               getQuary();
@@ -43,6 +73,7 @@ const EditPage = (props) => {
                 console.error("未知错误:", error.message);
               }
             });
+          }
           setIsEdit(false);
         }}
         onFinishFailed={(err) => {
@@ -77,6 +108,9 @@ const EditPage = (props) => {
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
             提交
+          </Button>
+          <Button onClick={() => setIsEdit(false)}>
+            返回
           </Button>
         </Form.Item>
       </Form>

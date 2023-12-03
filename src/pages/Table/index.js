@@ -5,6 +5,7 @@ import { Table, Card, Button, Space } from "antd";
 import axios from "axios";
 import "./index.css";
 import EditPage from "./EditPage";
+import SearchCard from "./SearchCard";
 
 const { Column } = Table;
 
@@ -19,6 +20,8 @@ const App = () => {
   const [data, setData] = useState([]); // 表格数据
   const [loading, setLoading] = useState(false); // 表格是否加载
   const [isEdit, setIsEdit] = useState(false); // 是否是编辑页面
+  const [recordValue, setRecordValue] = useState(); // 是否是编辑页面
+
   const getQuary = () => {
     setLoading(true);
     axios.get("/api/coc.quary").then(
@@ -46,6 +49,7 @@ const App = () => {
           新增数据
         </Button>
       </div>
+      <SearchCard setData={setData} getQuary={getQuary} />
       <Table dataSource={data} loading={loading}>
         <Column title="等级" dataIndex="label" key="label" />
         <Column
@@ -115,7 +119,8 @@ const App = () => {
                 <Button
                   type="primary"
                   onClick={() => {
-                    console.log(/编辑/, record);
+                    setRecordValue(record)
+                    setIsEdit(true)
                   }}
                 >
                   编辑
@@ -127,7 +132,7 @@ const App = () => {
                     axios
                       .post(
                         "/api/coc.delete",
-                        JSON.stringify({ translate: record?.translate }),
+                        JSON.stringify({ id: record?.id }),
                         config
                       )
                       .then(() => {
@@ -156,7 +161,7 @@ const App = () => {
       </Table>
     </Card>
   ) : (
-    <EditPage getQuary={getQuary} setIsEdit={setIsEdit} />
+    <EditPage recordValue={recordValue} getQuary={getQuary} setIsEdit={setIsEdit} />
   );
 };
 
