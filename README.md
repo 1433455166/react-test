@@ -76,6 +76,8 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 接入了接口
 - 20230903 多云 周日
 实现了增删功能
+- 20231203 晴 周日
+实现了增删改查
 
 # TODO
 - 修改数据 默认值未展示
