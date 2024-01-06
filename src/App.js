@@ -18,6 +18,7 @@ import Game from "./pages/Game";
 import Table from "./pages/Table";
 import Filter from "./pages/Test/Filter";
 import Roll from "./pages/Test/Roll";
+import UniqueValueTest from "./pages/Test/UniqueValueTest";
 // import Error from "./components/404";
 
 const items = [
@@ -90,7 +91,7 @@ const items = [
 ];
 
 function App() {
-  const [current, setCurrent] = useState("table");
+  const [current, setCurrent] = useState("test");
   const onClick = (e) => setCurrent(e.key);
   // js工具包测试
   console.log(/js工具包测试/, { money: amountConversion(1000000.0) });
@@ -109,11 +110,12 @@ function App() {
           {/* 跳转TodoList组件 */}
           <Route path="/todoList" exact component={TodoList} />
           <Route path="/todoListTwo" exact component={TodoListTwo} />
-          <Route path="/" exact component={Table} /> {/* 默认路由 */}
-          <Route path="/test" exact component={Filter} />
+          <Route path="/" exact component={UniqueValueTest} /> {/* 默认路由 */}
+          <Route path="/test" exact component={UniqueValueTest} />
           <Route path="/test/filter" exact component={Filter} />
           <Route path="/test/intervalGetDom" exact component={IntervalGetDom} />
           <Route path="/test/roll" exact component={Roll} />
+          <Route path="/test/UniqueValueTest" exact component={UniqueValueTest} />
           <Route path="/game" exact component={Game} />
           <Route path="/game/plane" exact component={Game} />
           <Route path="/game/bouncyBall" exact component={Game} />
@@ -122,7 +124,7 @@ function App() {
           <Route path="/other" exact component={Other} />
           {/* 404 页面 */}
           {/* <Route component={Error} /> */}
-          <Redirect from="/" to="/table" />
+          <Redirect from="/" to="/test" />
           {/* <Redirect from="/test" to="/test/filter" /> */}
           {/* <Redirect from="/game" to="/game/plane" /> */}
         </HashRouter>

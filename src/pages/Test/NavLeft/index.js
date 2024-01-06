@@ -18,6 +18,11 @@ const items = [
     key: "intervalGetDom",
     icon: <StepForwardOutlined />,
   },
+  {
+    label: <a href="#/test/UniqueValueTest">唯一值测试</a>,
+    key: "UniqueValueTest",
+    icon: <StepForwardOutlined />,
+  },
 ];
 
 const NavLeft = () => {

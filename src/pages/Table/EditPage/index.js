@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, Form, Button, Input } from "antd";
 import axios from "axios";
-import getUniqueId from "../../../utils/getUniqueId";
+import { getStringId } from "lz-js-tools";
 import "./index.css";
 
 const EditPage = (props) => {
@@ -52,7 +52,7 @@ const EditPage = (props) => {
         style={{ maxWidth: 600 }}
         initialValues={recordValue}
         onFinish={(params) => {
-          const value = { ...params, id: getUniqueId()}
+          const value = { ...params, id: getStringId()}
           if (recordValue) {
             editClick(params)
           } else {
