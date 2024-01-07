@@ -111,7 +111,7 @@ function App() {
           {/* 跳转TodoList组件 */}
           <Route path="/todoList" exact component={TodoList} />
           <Route path="/todoListTwo" exact component={TodoListTwo} />
-          <Route path="/" exact component={Game} /> {/* 默认路由 */}
+          <Route path="/" exact component={Gobang} /> {/* 默认路由 */}
           <Route path="/test" exact component={UniqueValueTest} />
           <Route path="/test/filter" exact component={Filter} />
           <Route path="/test/intervalGetDom" exact component={IntervalGetDom} />
@@ -127,7 +127,7 @@ function App() {
           {/* <Route component={Error} /> */}
           <Redirect from="/" to="/game" />
           {/* <Redirect from="/test" to="/test/filter" /> */}
-          {/* <Redirect from="/game" to="/game/plane" /> */}
+          <Redirect from="/game" to="/game/gobang" />
         </HashRouter>
       </div>
       <div className="app-footer">1433455166@qq.com版权所有</div>
