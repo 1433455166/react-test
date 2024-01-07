@@ -15,6 +15,7 @@ import Other from "./pages/Other";
 import TodoList from "./pages/TodoList";
 import TodoListTwo from "./pages/TodoListTwo";
 import Game from "./pages/Game";
+import Gobang from "./pages/Game/Gobang";
 import Table from "./pages/Table";
 import Filter from "./pages/Test/Filter";
 import Roll from "./pages/Test/Roll";
@@ -110,21 +111,21 @@ function App() {
           {/* 跳转TodoList组件 */}
           <Route path="/todoList" exact component={TodoList} />
           <Route path="/todoListTwo" exact component={TodoListTwo} />
-          <Route path="/" exact component={UniqueValueTest} /> {/* 默认路由 */}
+          <Route path="/" exact component={Game} /> {/* 默认路由 */}
           <Route path="/test" exact component={UniqueValueTest} />
           <Route path="/test/filter" exact component={Filter} />
           <Route path="/test/intervalGetDom" exact component={IntervalGetDom} />
           <Route path="/test/roll" exact component={Roll} />
           <Route path="/test/UniqueValueTest" exact component={UniqueValueTest} />
-          <Route path="/game" exact component={Game} />
+          <Route path="/game" exact component={Gobang} />
           <Route path="/game/plane" exact component={Game} />
           <Route path="/game/bouncyBall" exact component={Game} />
-          <Route path="/game/gobang" exact component={Game} />
+          <Route path="/game/gobang" exact component={Gobang} />
           <Route path="/table" exact component={Table} />
           <Route path="/other" exact component={Other} />
           {/* 404 页面 */}
           {/* <Route component={Error} /> */}
-          <Redirect from="/" to="/test" />
+          <Redirect from="/" to="/game" />
           {/* <Redirect from="/test" to="/test/filter" /> */}
           {/* <Redirect from="/game" to="/game/plane" /> */}
         </HashRouter>
