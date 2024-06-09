@@ -1,121 +1,224 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from "react";
-import { Card, Form, Button, Input } from "antd";
+import React, { useState } from "react";
+import { PlusOutlined } from "@ant-design/icons";
+import { Card, Form, Button, Input, Upload, InputNumber, Modal } from "antd";
 import axios from "axios";
 import { getStringId } from "lz-js-tools";
 import "./index.css";
 
 const EditPage = (props) => {
-  const { setIsEdit, getQuary, recordValue } = props;
+    const { setIsEdit, getQuary, recordValue } = props;
 
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    timeout: 5000, // 设置超时时间为5秒
-  };
-  const type = "新增";
+    // 类型是编辑还是新增
+    const type = recordValue ? "编辑" : "新增";
 
-  const editClick = (params) => {
-    axios
-    .post(
-      "/api/coc.edit",
-      JSON.stringify({ ...recordValue, ...params }),
-      config
-    )
-    .then(() => {
-      getQuary();
-    })
-    .catch((error) => {
-      // 报错处理
-      if (error.code === "ECONNABORTED") {
-        console.error("请求超时！");
-      } else if (error.response) {
-        console.error("服务器错误:", error.response.data);
-      } else if (error.request) {
-        console.error("请求错误:", error.request);
-      } else {
-        console.error("未知错误:", error.message);
-      }
-    });
-  }
+    const [fileList, setFileList] = useState([
+        {
+            thumbUrl: recordValue?.image,
+        },
+    ]);
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewImage, setPreviewImage] = useState(recordValue?.image);
+    const [previewTitle, setPreviewTitle] = useState("");
+    const [form] = Form.useForm();
 
-  return (
-    <Card>
-      <div className="top-wrap">
-        <div className="coc-title">等级数据{type}</div>
-      </div>
-      <Form
-        name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
-        initialValues={recordValue}
-        onFinish={(params) => {
-          const value = { ...params, id: getStringId()}
-          if (recordValue) {
-            editClick(params)
-          } else {
-            axios
-            .post("/api/coc.add", JSON.stringify(value), config)
+    const getBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            if (!file) {
+                return resolve(recordValue?.image);
+            } else {
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+            }
+        });
+
+    // 图片上传组件 onchange 事件
+    const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+
+    const config = {
+        headers: {
+            "Content-Type": "application/json",
+        },
+        timeout: 5000, // 设置超时时间为5秒
+    };
+
+    // 编辑时提交事件
+    const editClick = (params) => {
+        axios
+            .post(
+                "/api/coc.edit",
+                JSON.stringify({
+                    ...recordValue,
+                    ...params,
+                    image: fileList?.[0]?.thumbUrl,
+                }),
+                config
+            )
             .then(() => {
-              getQuary();
+                getQuary();
             })
             .catch((error) => {
-              // 报错处理
-              if (error.code === "ECONNABORTED") {
-                console.error("请求超时！");
-              } else if (error.response) {
-                console.error("服务器错误:", error.response.data);
-              } else if (error.request) {
-                console.error("请求错误:", error.request);
-              } else {
-                console.error("未知错误:", error.message);
-              }
+                // 报错处理
+                if (error.code === "ECONNABORTED") {
+                    console.error("请求超时！");
+                } else if (error.response) {
+                    console.error("服务器错误:", error.response.data);
+                } else if (error.request) {
+                    console.error("请求错误:", error.request);
+                } else {
+                    console.error("未知错误:", error.message);
+                }
             });
-          }
-          setIsEdit(false);
-        }}
-        onFinishFailed={(err) => {
-          console.error(err);
-        }}
-        autoComplete="off"
-      >
-        <Form.Item
-          label="建筑"
-          name="build"
-          rules={[{ required: true, message: "请输入建筑" }]}
-        >
-          <Input />
-        </Form.Item>
+    };
 
-        <Form.Item
-          label="等级"
-          name="label"
-          rules={[{ required: true, message: "请输入等级" }]}
-        >
-          <Input />
-        </Form.Item>
+    // 更新组件按钮
+    const uploadButton = (
+        <button style={{ border: 0, background: "none" }} type="button">
+            <PlusOutlined />
+            <div style={{ marginTop: 8 }}>Upload</div>
+        </button>
+    );
 
-        <Form.Item
-          label="建筑中文翻译"
-          name="translate"
-          rules={[{ required: true, message: "请输入建筑中文翻译" }]}
-        >
-          <Input />
-        </Form.Item>
+    // 提交按钮事件
+    const onFinish = (params) => {
+        const value = {
+            ...params,
+            image: fileList?.[0]?.thumbUrl,
+            id: getStringId(),
+        };
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit">
-            提交
-          </Button>
-          <Button onClick={() => setIsEdit(false)}>
-            返回
-          </Button>
-        </Form.Item>
-      </Form>
-    </Card>
-  );
+        // console.log(/value/, value);
+        // return;
+
+        if (recordValue) {
+            editClick(params);
+        } else {
+            axios
+                .post("/api/coc.add", JSON.stringify(value), config)
+                .then(() => {
+                    getQuary();
+                })
+                .catch((error) => {
+                    // 报错处理
+                    if (error.code === "ECONNABORTED") {
+                        console.error("请求超时！");
+                    } else if (error.response) {
+                        console.error("服务器错误:", error.response.data);
+                    } else if (error.request) {
+                        console.error("请求错误:", error.request);
+                    } else {
+                        console.error("未知错误:", error.message);
+                    }
+                });
+        }
+        setIsEdit(false);
+    };
+
+    const handleCancel = () => setPreviewOpen(false);
+
+    const handlePreview = async (file) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setPreviewImage(file.url || file.preview);
+        setPreviewOpen(true);
+        setPreviewTitle(
+            file.name || file.url?.substring(file.url.lastIndexOf("/") + 1) || '图片放大镜'
+        );
+    };
+
+    // console.log(/render/, fileList);
+
+    return (
+        <Card>
+            <div className="top-wrap">
+                <div className="coc-title">等级数据{type}</div>
+            </div>
+            <Form
+                form={form}
+                name="basic"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                style={{ maxWidth: 600 }}
+                initialValues={recordValue}
+                onFinish={onFinish}
+                onFinishFailed={(err) => {
+                    console.error(err);
+                }}
+                autoComplete="off"
+            >
+                <Form.Item
+                    label="建筑"
+                    name="build"
+                    rules={[{ required: true, message: "请输入建筑" }]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item
+                    label="等级"
+                    name="label"
+                    rules={[{ required: true, message: "请输入等级" }]}
+                >
+                    <InputNumber />
+                </Form.Item>
+
+                <Form.Item
+                    label="建筑中文翻译"
+                    name="translate"
+                    rules={[{ required: true, message: "请输入建筑中文翻译" }]}
+                >
+                    <Input
+                        onBlur={(e) => {
+                            // 获取输入框的当前值
+                            let currentValue = e?.target?.value;
+                            // 使用正则表达式匹配非中文字符
+                            const nonChineseRegex = /[^\u4e00-\u9fa5]/g;
+                            // 替换非中文字符为空字符串
+                            const filteredValue = currentValue.replace(nonChineseRegex, "");
+                            // 如果过滤后的值和当前值不同，说明有非中文字符被移除
+                            if (filteredValue !== currentValue) {
+                                form.setFieldValue("translate", filteredValue);
+                            }
+                        }}
+                    />
+                </Form.Item>
+
+                <Form.Item
+                    label="建筑图片"
+                    name="image"
+                    rules={[{ required: true, message: "请输入建筑图片" }]}
+                >
+                    <Upload
+                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                        listType="picture-card"
+                        fileList={fileList}
+                        onPreview={handlePreview}
+                        onChange={handleChange}
+                    >
+                        {fileList.length >= 1 ? null : uploadButton}
+                    </Upload>
+                    <Modal
+                        open={previewOpen}
+                        title={previewTitle}
+                        footer={null}
+                        onCancel={handleCancel}
+                    >
+                        <img alt="example" style={{ width: "100%" }} src={previewImage} />
+                    </Modal>
+                </Form.Item>
+
+                <Form.Item wrapperCol={{ offset: 1, span: 6 }}>
+                    <Button type="primary" htmlType="submit" style={{ marginRight: 12 }}>
+                        提交
+                    </Button>
+                    <Button onClick={() => setIsEdit(false)}>返回</Button>
+                </Form.Item>
+            </Form>
+        </Card>
+    );
 };
 
 export default EditPage;

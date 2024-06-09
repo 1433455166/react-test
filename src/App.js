@@ -95,7 +95,7 @@ function App() {
   const [current, setCurrent] = useState("test");
   const onClick = (e) => setCurrent(e.key);
   // js工具包测试
-  console.log(/js工具包测试/, { money: amountConversion(1000000.0) });
+//   console.log(/js工具包测试/, { money: amountConversion(1000000.0) });
   return (
     <div className="app">
       <div>

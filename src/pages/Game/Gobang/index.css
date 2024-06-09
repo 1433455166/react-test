@@ -9,12 +9,3 @@
   font-weight: 900;
   padding: 12px;
 }
-
-.gobang-item {
-  width: 25px;
-  height: 25px;
-}
-
-.gobang-item :hover {
-  background: rgba(0, 0, 255, 0.5);
-}

@@ -20,13 +20,13 @@ const App = () => {
   const [data, setData] = useState([]); // 表格数据
   const [loading, setLoading] = useState(false); // 表格是否加载
   const [isEdit, setIsEdit] = useState(false); // 是否是编辑页面
-  const [recordValue, setRecordValue] = useState(); // 是否是编辑页面
+  const [recordValue, setRecordValue] = useState(); // 编辑数据
 
   const getQuary = () => {
     setLoading(true);
     axios.get("/api/coc.quary").then(
       (response) => {
-        console.log("成功了", response.data);
+        // console.log("成功了", response.data);
         setData(response.data);
         setTimeout(() => {
           setLoading(false);
@@ -45,7 +45,10 @@ const App = () => {
     <Card>
       <div className="top-wrap">
         <div className="coc-title">等级数据</div>
-        <Button type="primary" onClick={() => setIsEdit(true)}>
+        <Button type="primary" onClick={() => {
+            setRecordValue()
+            setIsEdit(true)
+        }}>
           新增数据
         </Button>
       </div>
@@ -110,6 +113,12 @@ const App = () => {
           // }}
         />
         <Column
+          title="建筑图片"
+          dataIndex="image"
+          key="image"
+          render={(url) => <img src={url} alt='' style={{ width: 64, height: 64 }} />}
+        />
+        <Column
           title="操作"
           dataIndex="action"
           key="action"
@@ -119,8 +128,8 @@ const App = () => {
                 <Button
                   type="primary"
                   onClick={() => {
-                    setRecordValue(record)
-                    setIsEdit(true)
+                    setRecordValue(record);
+                    setIsEdit(true);
                   }}
                 >
                   编辑
@@ -161,7 +170,11 @@ const App = () => {
       </Table>
     </Card>
   ) : (
-    <EditPage recordValue={recordValue} getQuary={getQuary} setIsEdit={setIsEdit} />
+    <EditPage
+      recordValue={recordValue}
+      getQuary={getQuary}
+      setIsEdit={setIsEdit}
+    />
   );
 };
 
