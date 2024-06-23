@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import { Card, Form, Button, Input, Upload, InputNumber, Modal } from "antd";
-import axios from "axios";
+import { Card, Form, Button, Input, Upload, InputNumber, Modal, message } from "antd";
 import { getStringId } from "lz-js-tools";
 import "./index.css";
+import { cocAdd, cocEdit } from "../../../serve"
 
 const EditPage = (props) => {
     const { setIsEdit, getQuary, recordValue } = props;
@@ -12,11 +12,14 @@ const EditPage = (props) => {
     // 类型是编辑还是新增
     const type = recordValue ? "编辑" : "新增";
 
-    const [fileList, setFileList] = useState([
+    // 是否是编辑态
+    const isEdit = type === "编辑"
+
+    const [fileList, setFileList] = useState(isEdit ? [
         {
             thumbUrl: recordValue?.image,
         },
-    ]);
+    ] : []);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState(recordValue?.image);
     const [previewTitle, setPreviewTitle] = useState("");
@@ -37,40 +40,16 @@ const EditPage = (props) => {
     // 图片上传组件 onchange 事件
     const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
 
-    const config = {
-        headers: {
-            "Content-Type": "application/json",
-        },
-        timeout: 5000, // 设置超时时间为5秒
-    };
-
     // 编辑时提交事件
-    const editClick = (params) => {
-        axios
-            .post(
-                "/api/coc.edit",
-                JSON.stringify({
-                    ...recordValue,
-                    ...params,
-                    image: fileList?.[0]?.thumbUrl,
-                }),
-                config
-            )
-            .then(() => {
-                getQuary();
-            })
-            .catch((error) => {
-                // 报错处理
-                if (error.code === "ECONNABORTED") {
-                    console.error("请求超时！");
-                } else if (error.response) {
-                    console.error("服务器错误:", error.response.data);
-                } else if (error.request) {
-                    console.error("请求错误:", error.request);
-                } else {
-                    console.error("未知错误:", error.message);
-                }
-            });
+    const editClick = async (params) => {
+        const res = await cocEdit({
+            ...recordValue,
+            ...params,
+            image: fileList?.[0]?.thumbUrl,
+        })
+        if (res?.success) {
+            getQuary();
+        }
     };
 
     // 更新组件按钮
@@ -82,7 +61,7 @@ const EditPage = (props) => {
     );
 
     // 提交按钮事件
-    const onFinish = (params) => {
+    const onFinish = async (params) => {
         const value = {
             ...params,
             image: fileList?.[0]?.thumbUrl,
@@ -95,23 +74,11 @@ const EditPage = (props) => {
         if (recordValue) {
             editClick(params);
         } else {
-            axios
-                .post("/api/coc.add", JSON.stringify(value), config)
-                .then(() => {
-                    getQuary();
-                })
-                .catch((error) => {
-                    // 报错处理
-                    if (error.code === "ECONNABORTED") {
-                        console.error("请求超时！");
-                    } else if (error.response) {
-                        console.error("服务器错误:", error.response.data);
-                    } else if (error.request) {
-                        console.error("请求错误:", error.request);
-                    } else {
-                        console.error("未知错误:", error.message);
-                    }
-                });
+            const res = await cocAdd(value)
+            if (res?.success) {
+                message.success("添加成功！")
+                getQuary();
+            }
         }
         setIsEdit(false);
     };
@@ -129,7 +96,21 @@ const EditPage = (props) => {
         );
     };
 
-    // console.log(/render/, fileList);
+    // 使用 customRequest 代替 action 处理文件，原因是 action 需要接口来处理，但是返回体不知道是什么，只能自己来处理了
+    const handleUpload = async (info) => {
+        try {
+            const url = await getBase64(info?.file);
+            form.setFieldsValue({
+                // 这里的 'image' 应该与 Form.Item 中的 name 属性一致  
+                image: url,
+            });
+            info.onSuccess(url);
+        } catch (error) {
+            info.onError(error);
+        }
+    };
+
+    // console.log(/render/, fileList, form.getFieldsValue());
 
     return (
         <Card>
@@ -144,9 +125,7 @@ const EditPage = (props) => {
                 style={{ maxWidth: 600 }}
                 initialValues={recordValue}
                 onFinish={onFinish}
-                onFinishFailed={(err) => {
-                    console.error(err);
-                }}
+                onFinishFailed={(err) => console.error(/onFinishFailed/, err)}
                 autoComplete="off"
             >
                 <Form.Item
@@ -192,11 +171,12 @@ const EditPage = (props) => {
                     rules={[{ required: true, message: "请输入建筑图片" }]}
                 >
                     <Upload
-                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                        // action="http://localhost:3000/api/picture.upload"
                         listType="picture-card"
                         fileList={fileList}
                         onPreview={handlePreview}
                         onChange={handleChange}
+                        customRequest={handleUpload}
                     >
                         {fileList.length >= 1 ? null : uploadButton}
                     </Upload>
@@ -209,7 +189,6 @@ const EditPage = (props) => {
                         <img alt="example" style={{ width: "100%" }} src={previewImage} />
                     </Modal>
                 </Form.Item>
-
                 <Form.Item wrapperCol={{ offset: 1, span: 6 }}>
                     <Button type="primary" htmlType="submit" style={{ marginRight: 12 }}>
                         提交

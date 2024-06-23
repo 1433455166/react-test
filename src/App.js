@@ -8,7 +8,7 @@ import {
   VerticalLeftOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
-import { amountConversion } from "lz-js-tools";
+// import { amountConversion } from "lz-js-tools";
 import "./App.css";
 import IntervalGetDom from "./pages/Test/IntervalGetDom";
 import Other from "./pages/Other";
@@ -92,26 +92,28 @@ const items = [
 ];
 
 function App() {
-  const [current, setCurrent] = useState("test");
+  const [current, setCurrent] = useState("table"); // 默认页面
   const onClick = (e) => setCurrent(e.key);
   // js工具包测试
 //   console.log(/js工具包测试/, { money: amountConversion(1000000.0) });
   return (
     <div className="app">
-      <div>
+      <div className="app-header">
         <Menu
           onClick={onClick}
           selectedKeys={[current]}
           mode="horizontal"
           items={items}
         />
+
+        <div>123</div>
       </div>
       <div className="app-content">
         <HashRouter>
           {/* 跳转TodoList组件 */}
           <Route path="/todoList" exact component={TodoList} />
           <Route path="/todoListTwo" exact component={TodoListTwo} />
-          <Route path="/" exact component={Gobang} /> {/* 默认路由 */}
+          <Route path="/" exact component={Table} /> {/* 默认路由 */}
           <Route path="/test" exact component={UniqueValueTest} />
           <Route path="/test/filter" exact component={Filter} />
           <Route path="/test/intervalGetDom" exact component={IntervalGetDom} />
@@ -125,9 +127,9 @@ function App() {
           <Route path="/other" exact component={Other} />
           {/* 404 页面 */}
           {/* <Route component={Error} /> */}
-          <Redirect from="/" to="/game" />
+          <Redirect from="/" to="/table" />
           {/* <Redirect from="/test" to="/test/filter" /> */}
-          <Redirect from="/game" to="/game/gobang" />
+          {/* <Redirect from="/game" to="/game/gobang" /> */}
         </HashRouter>
       </div>
       <div className="app-footer">1433455166@qq.com版权所有</div>

@@ -1,181 +1,125 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
-import { Table, Card, Button, Space } from "antd";
-import axios from "axios";
+import { Table, Card, Button, Space, Modal, message } from "antd";
 import "./index.css";
 import EditPage from "./EditPage";
 import SearchCard from "./SearchCard";
+import { cocQuary, cocDelete } from "../../serve"
 
 const { Column } = Table;
 
-const config = {
-  headers: {
-    "Content-Type": "application/json",
-  },
-  timeout: 5000, // 设置超时时间为5秒
-};
-
 const App = () => {
-  const [data, setData] = useState([]); // 表格数据
-  const [loading, setLoading] = useState(false); // 表格是否加载
-  const [isEdit, setIsEdit] = useState(false); // 是否是编辑页面
-  const [recordValue, setRecordValue] = useState(); // 编辑数据
+    const [data, setData] = useState([]); // 表格数据
+    const [loading, setLoading] = useState(false); // 表格是否加载
+    const [isEdit, setIsEdit] = useState(false); // 是否是编辑页面
+    const [recordValue, setRecordValue] = useState(); // 编辑数据
+    const [showDeleteModal, setShowDeleteModal] = useState(false); // 删除二次确认框的显隐
 
-  const getQuary = () => {
-    setLoading(true);
-    axios.get("/api/coc.quary").then(
-      (response) => {
-        // console.log("成功了", response.data);
-        setData(response.data);
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      },
-      (error) => {
-        console.log("失败了", error);
+    const getQuary = async () => {
+        setLoading(true);
+        const res = await cocQuary()
+        if (res?.success) {
+            setData(res?.data);
+        }
         setLoading(false);
-      }
+    };
+
+    useEffect(() => {
+        getQuary();
+    }, []);
+
+    // 删除二次确认弹窗确认事件
+    const handleOk = async (record) => {
+        try {
+            const res = await cocDelete({ id: record?.id })
+            if (res?.success) {
+                message.success("删除成功！")
+                getQuary();
+                setShowDeleteModal(false)
+            }
+        } catch {
+            setShowDeleteModal(false)
+        }
+    }
+
+    // 删除二次确认弹窗取消事件
+    const handleCancel = () => {
+        setShowDeleteModal(false);
+    };
+
+    return !isEdit ? (
+        <Card>
+            <div className="top-wrap">
+                <div className="coc-title">等级数据</div>
+                <Button type="primary" onClick={() => {
+                    setRecordValue()
+                    setIsEdit(true)
+                }}>
+                    新增数据
+                </Button>
+            </div>
+            <SearchCard setData={setData} getQuary={getQuary} />
+            <Table dataSource={data} loading={loading}>
+                <Column title="等级" dataIndex="label" key="label" />
+                <Column
+                    title="建筑"
+                    dataIndex="build"
+                    key="build"
+                />
+                <Column
+                    title="建筑中文翻译"
+                    dataIndex="translate"
+                    key="translate"
+                />
+                <Column
+                    title="建筑图片"
+                    dataIndex="image"
+                    key="image"
+                    render={(url) => <img src={url} alt='' style={{ width: 64, height: 64 }} />}
+                />
+                <Column
+                    title="操作"
+                    dataIndex="action"
+                    key="action"
+                    render={(_, record) => {
+                        return (
+                            <Space>
+                                <Button
+                                    type="primary"
+                                    onClick={() => {
+                                        setRecordValue(record);
+                                        setIsEdit(true);
+                                    }}
+                                >
+                                    编辑
+                                </Button>
+                                <Button
+                                    type="primary"
+                                    danger
+                                    onClick={() => setShowDeleteModal(true)}
+                                >
+                                    删除
+                                </Button>
+                                <Modal
+                                    title="是否删除"
+                                    open={showDeleteModal}
+                                    onOk={() => handleOk(record)}
+                                    onCancel={handleCancel}
+                                >确定删除吗？</Modal>
+                            </Space>
+                        );
+                    }}
+                />
+            </Table>
+        </Card>
+    ) : (
+        <EditPage
+            recordValue={recordValue}
+            getQuary={getQuary}
+            setIsEdit={setIsEdit}
+        />
     );
-  };
-  useEffect(() => {
-    getQuary();
-  }, []);
-  return !isEdit ? (
-    <Card>
-      <div className="top-wrap">
-        <div className="coc-title">等级数据</div>
-        <Button type="primary" onClick={() => {
-            setRecordValue()
-            setIsEdit(true)
-        }}>
-          新增数据
-        </Button>
-      </div>
-      <SearchCard setData={setData} getQuary={getQuary} />
-      <Table dataSource={data} loading={loading}>
-        <Column title="等级" dataIndex="label" key="label" />
-        <Column
-          title="建筑"
-          dataIndex="build"
-          key="build"
-          // render={(tags) => {
-          //   return <>{tags.join(",")}</>;
-          // }}
-        />
-        {/* <ColumnGroup title="最大建筑等级">
-          <Column
-            title="大本营"
-            dataIndex="maxBuildLabel"
-            key="baseCamp"
-            render={(maxBuildLabel) => maxBuildLabel?.baseCamp}
-          />
-          <Column
-            title="兵营"
-            dataIndex="maxBuildLabel"
-            key="barracks"
-            render={(maxBuildLabel) => maxBuildLabel?.barracks}
-          />
-          <Column
-            title="训练营"
-            dataIndex="maxBuildLabel"
-            key="trainingCamp"
-            render={(maxBuildLabel) => maxBuildLabel?.trainingCamp}
-          />
-          <Column
-            title="加农炮"
-            dataIndex="maxBuildLabel"
-            key="cannon"
-            render={(maxBuildLabel) => maxBuildLabel?.cannon}
-          />
-          <Column
-            title="箭塔"
-            dataIndex="maxBuildLabel"
-            key="bartizan"
-            render={(maxBuildLabel) => maxBuildLabel?.bartizan || "无"}
-          />
-        </ColumnGroup> */}
-        <Column
-          title="建筑中文翻译"
-          dataIndex="translate"
-          key="translate"
-          // render={(tags, record) => {
-          //   return (
-          //     <>
-          //       {(tags || []).map((tag) => (
-          //         <Tag color="blue" key={tag}>
-          //           {/* {record?.translate[tag]} */}
-          //           {record?.translate[tag]}
-          //         </Tag>
-          //       ))}
-          //     </>
-          //   );
-          // }}
-        />
-        <Column
-          title="建筑图片"
-          dataIndex="image"
-          key="image"
-          render={(url) => <img src={url} alt='' style={{ width: 64, height: 64 }} />}
-        />
-        <Column
-          title="操作"
-          dataIndex="action"
-          key="action"
-          render={(_, record) => {
-            return (
-              <Space>
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    setRecordValue(record);
-                    setIsEdit(true);
-                  }}
-                >
-                  编辑
-                </Button>
-                <Button
-                  type="primary"
-                  danger
-                  onClick={() => {
-                    axios
-                      .post(
-                        "/api/coc.delete",
-                        JSON.stringify({ id: record?.id }),
-                        config
-                      )
-                      .then(() => {
-                        getQuary();
-                      })
-                      .catch((error) => {
-                        // 报错处理
-                        if (error.code === "ECONNABORTED") {
-                          console.error("请求超时！");
-                        } else if (error.response) {
-                          console.error("服务器错误:", error.response.data);
-                        } else if (error.request) {
-                          console.error("请求错误:", error.request);
-                        } else {
-                          console.error("未知错误:", error.message);
-                        }
-                      });
-                  }}
-                >
-                  删除
-                </Button>
-              </Space>
-            );
-          }}
-        />
-      </Table>
-    </Card>
-  ) : (
-    <EditPage
-      recordValue={recordValue}
-      getQuary={getQuary}
-      setIsEdit={setIsEdit}
-    />
-  );
 };
 
 export default App;
