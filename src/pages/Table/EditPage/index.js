@@ -38,7 +38,18 @@ const EditPage = (props) => {
         });
 
     // 图片上传组件 onchange 事件
-    const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+    const handleChange = async (value) => {
+        const { fileList: newFileList } = value
+        // 使用 action，但是还是要在 onchange 的时候给 image 赋值，可以实现功能，但是接口还是没有必要，后面再说吧
+        const url = await getBase64(value?.file?.originFileObj);
+        if (url) {
+            form.setFieldsValue({
+                // 这里的 'image' 应该与 Form.Item 中的 name 属性一致  
+                image: url,
+            });
+        }
+        setFileList(newFileList)
+    };
 
     // 编辑时提交事件
     const editClick = async (params) => {
@@ -94,20 +105,6 @@ const EditPage = (props) => {
         setPreviewTitle(
             file.name || file.url?.substring(file.url.lastIndexOf("/") + 1) || '图片放大镜'
         );
-    };
-
-    // 使用 customRequest 代替 action 处理文件，原因是 action 需要接口来处理，但是返回体不知道是什么，只能自己来处理了
-    const handleUpload = async (info) => {
-        try {
-            const url = await getBase64(info?.file);
-            form.setFieldsValue({
-                // 这里的 'image' 应该与 Form.Item 中的 name 属性一致  
-                image: url,
-            });
-            info.onSuccess(url);
-        } catch (error) {
-            info.onError(error);
-        }
     };
 
     // console.log(/render/, fileList, form.getFieldsValue());
@@ -171,12 +168,11 @@ const EditPage = (props) => {
                     rules={[{ required: true, message: "请输入建筑图片" }]}
                 >
                     <Upload
-                        // action="http://localhost:3000/api/picture.upload"
+                        action="http://localhost:3000/api/picture.upload"
                         listType="picture-card"
                         fileList={fileList}
                         onPreview={handlePreview}
                         onChange={handleChange}
-                        customRequest={handleUpload}
                     >
                         {fileList.length >= 1 ? null : uploadButton}
                     </Upload>
