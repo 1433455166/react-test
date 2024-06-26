@@ -91,7 +91,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 - 20240623 大小雨 周日
 1. 接口统一处理
-2. 图片上传组件处理，原来使用的 action 方法没有实现，后续处理
+2. 图片上传组件处理，原来使用的 action 方法没有实现，后续处理 ✅
 
 # TODO
 - 中医

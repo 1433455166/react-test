@@ -29,3 +29,21 @@ export const cocSearch = (params) => {
     const res = request({ url: "/api/coc.search", params }, "POST");
     return res
 }
+
+// 注册
+export const registerApi = (params) => {
+    const res = request({ url: "/api/user.register", params }, "POST");
+    return res
+}
+
+// 登录
+export const logInApi = (params) => {
+    const res = request({ url: "/api/user.logIn", params }, "POST");
+    return res
+}
+
+// 获取登录信息
+export const userGetApi = (params) => {
+    const res = request({ url: "/api/user.get", params }, "POST");
+    return res
+}

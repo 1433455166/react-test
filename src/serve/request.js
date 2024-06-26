@@ -1,3 +1,4 @@
+/* eslint-disable no-throw-literal */
 import axios from "axios";
 import { message } from "antd";
 
@@ -11,6 +12,13 @@ const config = {
 
 // 成功处理函数
 const successFn = (success) => {
+    if (!success?.data?.success) {
+        message.error(success?.data?.errorMessage || "系统错误，请联系管理员！");
+        throw {
+            ...success,
+            success: false
+        }
+    }
     return {
         ...success,
         success: true

@@ -20,6 +20,7 @@ import Table from "./pages/Table";
 import Filter from "./pages/Test/Filter";
 import Roll from "./pages/Test/Roll";
 import UniqueValueTest from "./pages/Test/UniqueValueTest";
+import User from "./components/User";
 // import Error from "./components/404";
 
 const items = [
@@ -106,7 +107,7 @@ function App() {
           items={items}
         />
 
-        <div>123</div>
+        <User />
       </div>
       <div className="app-content">
         <HashRouter>

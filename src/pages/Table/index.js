@@ -18,11 +18,16 @@ const App = () => {
 
     const getQuary = async () => {
         setLoading(true);
-        const res = await cocQuary()
-        if (res?.success) {
-            setData(res?.data);
+        try {
+            const res = await cocQuary()
+            if (res?.success) {
+                setData(JSON.parse(res?.data?.data || '{}'));
+            }
+            setLoading(false);
+        } catch (error) {
+            console.log(/error/, error)
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     useEffect(() => {
