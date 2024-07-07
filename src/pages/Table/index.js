@@ -2,10 +2,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import { Table, Card, Button, Space, Modal, message } from "antd";
+import { useSelector, useDispatch } from 'react-redux'; 
+import { signOut } from '../../actions'
 import "./index.css";
 import EditPage from "./EditPage";
 import SearchCard from "./SearchCard";
 import { cocQuary, cocDelete } from "../../serve"
+import { LOGIN_STATUS } from "../../common"
 
 const { Column } = Table;
 
@@ -15,6 +18,9 @@ const App = () => {
     const [isEdit, setIsEdit] = useState(false); // 是否是编辑页面
     const [recordValue, setRecordValue] = useState(); // 编辑数据
     const [showDeleteModal, setShowDeleteModal] = useState(false); // 删除二次确认框的显隐
+
+    const dispatch = useDispatch();
+    const signOutFn = () => dispatch(signOut());
 
     const getQuary = async () => {
         setLoading(true);
@@ -26,13 +32,17 @@ const App = () => {
             setLoading(false);
         } catch (error) {
             console.log(/error/, error)
+            if(error?.data?.errorStatus === LOGIN_STATUS.SIGN_OUT) {
+                signOutFn()
+            }
             setLoading(false);
         }
     };
 
+    const isLogIn = useSelector((state) => state.counter.isLogIn);
     useEffect(() => {
         getQuary();
-    }, []);
+    }, [isLogIn]);
 
     // 删除二次确认弹窗确认事件
     const handleOk = async (record) => {

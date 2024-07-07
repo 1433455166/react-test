@@ -1,9 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /**
  * 登录组件
  */
 import { Button, Input, Modal, Form, message } from "antd";
 import React, { useState, useEffect } from "react";
-import { registerApi, logInApi, userGetApi } from '../../serve'
+import { registerApi, logInApi, userGetApi } from '../../serve';
+import { useDispatch, useSelector } from 'react-redux';
+import { loghIn } from '../../actions';
+import { LOGIN_STATUS } from "../../common"
 import './index.css'
 
 const TYPE = {
@@ -24,6 +28,9 @@ const User = () => {
 
     const [form] = Form.useForm();
 
+    const dispatch = useDispatch();
+    const loghInFn = () => dispatch(loghIn());
+
     // 登录
     const logIn = async () => {
         try {
@@ -32,6 +39,7 @@ const User = () => {
             // 注册成功清空表单
             form.resetFields()
             setUserMsg(validateFields)
+            loghInFn()
             message.success("登录成功")
             setShowModal(false)
         } catch (error) {
@@ -66,24 +74,23 @@ const User = () => {
     }
 
     // 获取登录信息
-    const getUser = async (params) => {
+    const getUser = async () => {
         try {
-            const res = await userGetApi({ userID: params })
+            const res = await userGetApi()
             setUserMsg({ ...res?.data?.data })
+            loghInFn()
         } catch (error) {
             console.log(/error/, error);
+            if(error?.data?.errorStatus === LOGIN_STATUS.SIGN_OUT) {
+                setUserMsg({})
+            }
         }
     }
 
+    const isLogIn = useSelector((state) => state.counter.isLogIn);
     useEffect(() => {
-        const cookie = document.cookie
-        const value = `; ${cookie}`;  
-        const parts = value.split(`; userID=`);  
-        if (parts.length === 2) {
-            const value = parts.pop().split(';').shift();  
-            getUser(Number(value))
-        }
-    }, [])
+        getUser()
+    }, [isLogIn])
 
     return (userMsg.userName ? (
         <div className="logging-in">
