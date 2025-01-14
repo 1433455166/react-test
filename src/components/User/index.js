@@ -5,9 +5,11 @@
 import { Button, Input, Modal, Form, message } from "antd";
 import React, { useState, useEffect } from "react";
 import { registerApi, logInApi, userGetApi } from '../../serve';
+import { setCookie, getCookie } from '../../utils/cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { loghIn } from '../../actions';
 import { LOGIN_STATUS } from "../../common"
+import { COOKIE_NAME } from "../../common/const"
 import './index.css'
 
 const TYPE = {
@@ -76,13 +78,21 @@ const User = () => {
     // 获取登录信息
     const getUser = async () => {
         try {
-            const res = await userGetApi()
+            const user = JSON.parse(getCookie(COOKIE_NAME.userMessage) || '{}')
+            const res = await userGetApi({ ...user });
+            setCookie(COOKIE_NAME.userMessage, JSON.stringify({ ...res?.data?.data }, 12))
             setUserMsg({ ...res?.data?.data })
             loghInFn()
         } catch (error) {
             console.log(/error/, error);
-            if(error?.data?.errorStatus === LOGIN_STATUS.SIGN_OUT) {
-                setUserMsg({})
+            if (error?.data?.errorStatus === LOGIN_STATUS.SIGN_OUT) {
+                const user = JSON.parse(getCookie(COOKIE_NAME.userMessage) || '{}')
+                if (user?.userName) {
+                    setUserMsg({ ...user })
+                    loghInFn()
+                } else {
+                    setUserMsg({})
+                }
             }
         }
     }

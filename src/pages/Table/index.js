@@ -9,6 +9,8 @@ import EditPage from "./EditPage";
 import SearchCard from "./SearchCard";
 import { cocQuary, cocDelete } from "../../serve"
 import { LOGIN_STATUS } from "../../common"
+import { COOKIE_NAME } from "../../common/const"
+import { getCookie } from '../../utils/cookie';
 
 const { Column } = Table;
 
@@ -33,7 +35,11 @@ const App = () => {
         } catch (error) {
             console.log(/error/, error)
             if(error?.data?.errorStatus === LOGIN_STATUS.SIGN_OUT) {
-                signOutFn()
+                const user = JSON.parse(getCookie(COOKIE_NAME.userMessage) || '{}')
+                if (!user?.userName) {
+                    signOutFn()
+                }
+                
             }
             setLoading(false);
         }
@@ -112,21 +118,26 @@ const App = () => {
                                 <Button
                                     type="primary"
                                     danger
-                                    onClick={() => setShowDeleteModal(true)}
+                                    onClick={() => {
+                                        setRecordValue(record);
+                                        setShowDeleteModal(true)
+                                    }}
                                 >
                                     删除
                                 </Button>
-                                <Modal
-                                    title="是否删除"
-                                    open={showDeleteModal}
-                                    onOk={() => handleOk(record)}
-                                    onCancel={handleCancel}
-                                >确定删除吗？</Modal>
                             </Space>
                         );
                     }}
                 />
             </Table>
+            <Modal
+                title="是否删除"
+                open={showDeleteModal}
+                onOk={() => handleOk(recordValue)}
+                onCancel={handleCancel}
+            >
+                确定删除吗？
+            </Modal>
         </Card>
     ) : (
         <EditPage

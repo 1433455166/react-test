@@ -25,23 +25,11 @@ const EditPage = (props) => {
     const [previewTitle, setPreviewTitle] = useState("");
     const [form] = Form.useForm();
 
-    const getBase64 = (file) =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            if (!file) {
-                return resolve(recordValue?.image);
-            } else {
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = (error) => reject(error);
-            }
-        });
-
     // 图片上传组件 onchange 事件
     const handleChange = async (value) => {
         const { fileList: newFileList } = value
-        // 使用 action，但是还是要在 onchange 的时候给 image 赋值，可以实现功能，但是接口还是没有必要，后面再说吧
-        const url = await getBase64(value?.file?.originFileObj);
+        
+        const url = value?.file?.response?.filePath;
         if (url) {
             form.setFieldsValue({
                 // 这里的 'image' 应该与 Form.Item 中的 name 属性一致  
@@ -56,7 +44,6 @@ const EditPage = (props) => {
         const res = await cocEdit({
             ...recordValue,
             ...params,
-            image: fileList?.[0]?.thumbUrl,
         })
         if (res?.success) {
             getQuary();
@@ -75,7 +62,6 @@ const EditPage = (props) => {
     const onFinish = async (params) => {
         const value = {
             ...params,
-            image: fileList?.[0]?.thumbUrl,
             id: getStringId(),
         };
 
@@ -98,7 +84,7 @@ const EditPage = (props) => {
 
     const handlePreview = async (file) => {
         if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
+            file.preview = file?.response?.filePath;
         }
         setPreviewImage(file.url || file.preview);
         setPreviewOpen(true);
@@ -126,19 +112,19 @@ const EditPage = (props) => {
                 autoComplete="off"
             >
                 <Form.Item
-                    label="建筑"
-                    name="build"
-                    rules={[{ required: true, message: "请输入建筑" }]}
-                >
-                    <Input />
-                </Form.Item>
-
-                <Form.Item
                     label="等级"
                     name="label"
                     rules={[{ required: true, message: "请输入等级" }]}
                 >
                     <InputNumber />
+                </Form.Item>
+
+                <Form.Item
+                    label="建筑"
+                    name="build"
+                    rules={[{ required: true, message: "请输入建筑" }]}
+                >
+                    <Input />
                 </Form.Item>
 
                 <Form.Item
