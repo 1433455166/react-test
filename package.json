@@ -21,10 +21,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "set BROWSER=none && set PORT=3001 && react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "set BROWSER=none && set PORT=3001 && craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "craco eject"
   },
   "eslintConfig": {
     "extends": [
@@ -45,7 +45,9 @@
     ]
   },
   "devDependencies": {
-    "node-sass": "^7.0.3",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@craco/craco": "^7.1.0",
+    "sass": "^1.83.4",
     "sass-loader": "^13.2.0"
   }
 }
