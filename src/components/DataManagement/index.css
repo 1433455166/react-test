@@ -1,0 +1,8 @@
+.top-wrap {
+  display: flex;
+  justify-content: space-between;
+}
+.coc-title {
+  font-size: 24px;
+  margin-bottom: 12px;
+}

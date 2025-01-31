@@ -19,43 +19,58 @@ import TodoListTwo from "./pages/TodoListTwo";
 import Game from "./pages/Game";
 import Gobang from "./pages/Game/Gobang";
 import Table from "./pages/Table";
+import PDCarouselImage from "./pages/DataBackground/PDCarouselImage";
+import PDRecentlyStudy from "./pages/DataBackground/PDRecentlyStudy";
 import Filter from "./pages/Test/Filter";
 import Roll from "./pages/Test/Roll";
 import UniqueValueTest from "./pages/Test/UniqueValueTest";
 import User from "./components/User";
+import { router } from "./common/enum.ts";
 // import Error from "./components/404";
 
 const items = [
     {
-        label: <a href="#/todoList">列表</a>,
-        key: "todoList",
+        label: <a href={`#/${router.todoList}`}>列表</a>,
+        key: router.todoList,
         icon: <MailOutlined />,
+        components: TodoList,
     },
     {
-        label: <a href="#/todoListTwo">列表2.0</a>,
-        key: "todoListTwo",
+        label: <a href={`#/${router.todoListTwo}`}>列表2.0</a>,
+        key: router.todoListTwo,
         icon: <AppstoreOutlined />,
+        components: TodoListTwo,
         // disabled: true, // 是否可选
     },
     {
-        label: <a href="#/other">展开收起</a>,
-        key: "alipay",
+        label: <a href={`#/${router.other}`}>展开收起</a>,
+        key: router.other,
         icon: <UpSquareOutlined />,
+        components: Other,
     },
     {
-        label: <a href="#/test">组件测试</a>,
-        key: "test",
+        label: <a href={`#/${router.test}`}>组件测试</a>,
+        key: router.test,
         icon: <VerticalLeftOutlined />,
+        components: UniqueValueTest
     },
     {
-        label: <a href="#/game">游戏</a>,
-        key: "game",
+        label: <a href={`#/${router.game}`}>游戏</a>,
+        key: router.game,
         icon: <VerticalLeftOutlined />,
+        components: Gobang
     },
     {
-        label: <a href="#/table">数据/表格</a>,
-        key: "table",
+        label: <a href={`#/${router.table}`}>数据/表格</a>,
+        key: router.table,
         icon: <VerticalLeftOutlined />,
+        components: Table
+    },
+    {
+        label: <a href={`#/${router.dataBackground}`}>数据后台</a>,
+        key: router.dataBackground,
+        icon: <VerticalLeftOutlined />,
+        components: PDCarouselImage
     },
     {
         label: "其他-代办",
@@ -94,8 +109,12 @@ const items = [
     },
 ];
 
+// 默认路由
+const defaultRouter = router.table
+const defaultRouterComponents = items.find((item) => item.key === defaultRouter).components
+
 function App() {
-    const [current, setCurrent] = useState("table"); // 默认页面
+    const [current, setCurrent] = useState(defaultRouter); // 默认页面
     const onClick = (e) => setCurrent(e.key);
     // js工具包测试
     //   console.log(/js工具包测试/, { money: amountConversion(1000000.0) });
@@ -114,25 +133,26 @@ function App() {
                 </div>
                 <div className="app-content">
                     <HashRouter>
-                        {/* 跳转TodoList组件 */}
-                        <Route path="/todoList" exact component={TodoList} />
-                        <Route path="/todoListTwo" exact component={TodoListTwo} />
-                        <Route path="/" exact component={Table} /> {/* 默认路由 */}
-                        <Route path="/test" exact component={UniqueValueTest} />
-                        <Route path="/test/filter" exact component={Filter} />
-                        <Route path="/test/intervalGetDom" exact component={IntervalGetDom} />
-                        <Route path="/test/roll" exact component={Roll} />
-                        <Route path="/test/UniqueValueTest" exact component={UniqueValueTest} />
-                        <Route path="/game" exact component={Gobang} />
-                        <Route path="/game/plane" exact component={Game} />
-                        <Route path="/game/bouncyBall" exact component={Game} />
-                        <Route path="/game/gobang" exact component={Gobang} />
-                        <Route path="/table" exact component={Table} />
-                        <Route path="/other" exact component={Other} />
+                        <Route path={`/${router.todoList}`} exact component={TodoList} />
+                        <Route path={`/${router.todoListTwo}`} exact component={TodoListTwo} />
+                        <Route path="/" exact component={defaultRouterComponents} /> {/* 默认路由 */}
+                        <Route path={`/${router.test}`} exact component={items.find((item) => item.key === router.test).components} />
+                        <Route path={`/${router.test}/filter`} exact component={Filter} />
+                        <Route path={`/${router.test}/intervalGetDom`} exact component={IntervalGetDom} />
+                        <Route path={`/${router.test}/roll`} exact component={Roll} />
+                        <Route path={`/${router.test}/UniqueValueTest`} exact component={UniqueValueTest} />
+                        <Route path={`/${router.game}`} exact component={items.find((item) => item.key === router.game).components} />
+                        <Route path={`/${router.game}/plane`} exact component={Game} />
+                        <Route path={`/${router.game}/bouncyBall`} exact component={Game} />
+                        <Route path={`/${router.game}/gobang`} exact component={Gobang} />
+                        <Route path={`/${router.table}`} exact component={Table} />
+                        <Route path={`/${router.dataBackground}`} exact component={PDCarouselImage} />
+                        <Route path={`/${router.dataBackground}/pDCarouselImage`} exact component={PDCarouselImage} />
+                        <Route path={`/${router.dataBackground}/pDRecentlyStudy`} exact component={PDRecentlyStudy} />
+                        <Route path={`/${router.other}`} exact component={Other} />
                         {/* 404 页面 */}
                         {/* <Route component={Error} /> */}
-                        <Redirect from="/" to="/table" />
-                        {/* <Redirect from="/test" to="/test/filter" /> */}
+                        <Redirect from="/" to={`/${defaultRouter}`} />
                         {/* <Redirect from="/game" to="/game/gobang" /> */}
                     </HashRouter>
                 </div>

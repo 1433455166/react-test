@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /**
  * 登录组件
  */
@@ -43,6 +42,7 @@ const User = () => {
             setUserMsg(validateFields)
             loghInFn()
             message.success("登录成功")
+            setCookie(COOKIE_NAME.userMessage, JSON.stringify({ ...validateFields }, 12))
             setShowModal(false)
         } catch (error) {
             console.log(/error/, error);
@@ -98,8 +98,11 @@ const User = () => {
     }
 
     const isLogIn = useSelector((state) => state.counter.isLogIn);
+    const isUseEffectFn = async () => {
+        await getUser()
+    }
     useEffect(() => {
-        getUser()
+        isUseEffectFn()
     }, [isLogIn])
 
     return (userMsg.userName ? (

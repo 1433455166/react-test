@@ -6,6 +6,12 @@ export const cocQuary = () => {
     return res
 }
 
+// 列表查询
+export const easyQueryList = (params) => {
+    const res = request({ url: "/api/cc.lz.easyQueryList", params }, "POST");
+    return res
+}
+
 // coc 删除
 export const cocDelete = (params) => {
     const res = request({ url: "/api/coc.delete", params }, "POST");

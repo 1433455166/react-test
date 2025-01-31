@@ -1,4 +1,4 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Card, Form, Button, Input, Upload, InputNumber, Modal, message } from "antd";
@@ -7,7 +7,7 @@ import "./index.css";
 import { cocAdd, cocEdit } from "../../../serve"
 
 const EditPage = (props) => {
-    const { setIsEdit, getQuary, recordValue } = props;
+    const { setIsEdit, getQuary, recordValue, tableColumnList, title } = props;
 
     // 类型是编辑还是新增
     const type = recordValue ? "编辑" : "新增";
@@ -17,23 +17,29 @@ const EditPage = (props) => {
 
     const [fileList, setFileList] = useState(isEdit ? [
         {
-            thumbUrl: recordValue?.image,
+            thumbUrl: recordValue?.imgUrl,
         },
     ] : []);
     const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState(recordValue?.image);
+    const [previewImage, setPreviewImage] = useState(recordValue?.imgUrl);
     const [previewTitle, setPreviewTitle] = useState("");
     const [form] = Form.useForm();
 
     // 图片上传组件 onchange 事件
-    const handleChange = async (value) => {
+    const handleChange = (value) => {
         const { fileList: newFileList } = value
-        
+
         const url = value?.file?.response?.filePath;
-        if (url) {
+        if (value?.file?.error) {
+            message.error('图片上传失败！');
+        } else if (url) {
             form.setFieldsValue({
                 // 这里的 'image' 应该与 Form.Item 中的 name 属性一致  
-                image: url,
+                imgUrl: url,
+            });
+        } else {
+            form.setFieldsValue({
+                imgUrl: null,
             });
         }
         setFileList(newFileList)
@@ -69,8 +75,12 @@ const EditPage = (props) => {
         // return;
 
         if (recordValue) {
+            console.log(/params/, params);
+            return;
             editClick(params);
         } else {
+            console.log(/value/, value);
+            return;
             const res = await cocAdd(value)
             if (res?.success) {
                 message.success("添加成功！")
@@ -82,7 +92,7 @@ const EditPage = (props) => {
 
     const handleCancel = () => setPreviewOpen(false);
 
-    const handlePreview = async (file) => {
+    const handlePreview = (file) => {
         if (!file.url && !file.preview) {
             file.preview = file?.response?.filePath;
         }
@@ -93,12 +103,46 @@ const EditPage = (props) => {
         );
     };
 
+    // 编辑组件
+    const components = (tableColumn) => {
+        switch (tableColumn?.type) {
+            case 'inputNumber': 
+                return <InputNumber />;
+            case 'input': 
+                return <Input onBlur={tableColumn?.onBlur} />;
+            case 'upload': 
+                return (
+                    <>
+                        <Upload
+                            action="http://localhost:3001/api/picture.upload"
+                            listType="picture-card"
+                            fileList={fileList}
+                            onPreview={handlePreview}
+                            onChange={handleChange}
+                        >
+                            {fileList.length >= 1 ? null : uploadButton}
+                        </Upload>
+                        <Modal
+                            open={previewOpen}
+                            title={previewTitle}
+                            footer={null}
+                            onCancel={handleCancel}
+                        >
+                            <img alt="example" style={{ width: "100%" }} src={previewImage} />
+                        </Modal>
+                    </>
+                );
+            default: 
+                return <Input /> 
+        }
+    }
+
     // console.log(/render/, fileList, form.getFieldsValue());
 
     return (
-        <Card>
+        <Card style={{ width: '100%', height: "100%" }}>
             <div className="top-wrap">
-                <div className="coc-title">等级数据{type}</div>
+                <div className="coc-title">{title}{type}</div>
             </div>
             <Form
                 form={form}
@@ -111,66 +155,18 @@ const EditPage = (props) => {
                 onFinishFailed={(err) => console.error(/onFinishFailed/, err)}
                 autoComplete="off"
             >
-                <Form.Item
-                    label="等级"
-                    name="label"
-                    rules={[{ required: true, message: "请输入等级" }]}
-                >
-                    <InputNumber />
-                </Form.Item>
-
-                <Form.Item
-                    label="建筑"
-                    name="build"
-                    rules={[{ required: true, message: "请输入建筑" }]}
-                >
-                    <Input />
-                </Form.Item>
-
-                <Form.Item
-                    label="建筑中文翻译"
-                    name="translate"
-                    rules={[{ required: true, message: "请输入建筑中文翻译" }]}
-                >
-                    <Input
-                        onBlur={(e) => {
-                            // 获取输入框的当前值
-                            let currentValue = e?.target?.value;
-                            // 使用正则表达式匹配非中文字符
-                            const nonChineseRegex = /[^\u4e00-\u9fa5]/g;
-                            // 替换非中文字符为空字符串
-                            const filteredValue = currentValue.replace(nonChineseRegex, "");
-                            // 如果过滤后的值和当前值不同，说明有非中文字符被移除
-                            if (filteredValue !== currentValue) {
-                                form.setFieldValue("translate", filteredValue);
-                            }
-                        }}
-                    />
-                </Form.Item>
-
-                <Form.Item
-                    label="建筑图片"
-                    name="image"
-                    rules={[{ required: true, message: "请输入建筑图片" }]}
-                >
-                    <Upload
-                        action="http://localhost:3001/api/picture.upload"
-                        listType="picture-card"
-                        fileList={fileList}
-                        onPreview={handlePreview}
-                        onChange={handleChange}
-                    >
-                        {fileList.length >= 1 ? null : uploadButton}
-                    </Upload>
-                    <Modal
-                        open={previewOpen}
-                        title={previewTitle}
-                        footer={null}
-                        onCancel={handleCancel}
-                    >
-                        <img alt="example" style={{ width: "100%" }} src={previewImage} />
-                    </Modal>
-                </Form.Item>
+                {(tableColumnList || []).map((tableColumn) => {
+                    return (
+                        <Form.Item
+                            label={tableColumn?.title}
+                            name={tableColumn?.dataIndex}
+                            rules={[{ required: true, message: `请输入${tableColumn?.title}` }]}
+                            key={tableColumn?.dataIndex}
+                        >
+                            {components(tableColumn)}
+                        </Form.Item>
+                    )
+                })}
                 <Form.Item wrapperCol={{ offset: 1, span: 6 }}>
                     <Button type="primary" htmlType="submit" style={{ marginRight: 12 }}>
                         提交
