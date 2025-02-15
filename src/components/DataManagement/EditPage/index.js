@@ -4,11 +4,12 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Card, Form, Button, Input, Upload, InputNumber, Modal, message } from "antd";
 import { getStringId } from "lz-js-tools";
 import "./index.css";
-import { cocAdd, cocEdit } from "../../../serve"
+import { easyAdd, easyEdit } from "../../../serve"
 
 const EditPage = (props) => {
-    const { setIsEdit, getQuary, recordValue, tableColumnList, title } = props;
+    const { setIsEdit, getQuary, recordValue, tableColumnList, title, collection } = props;
 
+    const imgName = tableColumnList?.find((column) => column?.type === 'upload')?.dataIndex
     // 类型是编辑还是新增
     const type = recordValue ? "编辑" : "新增";
 
@@ -17,11 +18,11 @@ const EditPage = (props) => {
 
     const [fileList, setFileList] = useState(isEdit ? [
         {
-            thumbUrl: recordValue?.imgUrl,
+            thumbUrl: recordValue?.[imgName],
         },
     ] : []);
     const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState(recordValue?.imgUrl);
+    const [previewImage, setPreviewImage] = useState(recordValue?.[imgName]);
     const [previewTitle, setPreviewTitle] = useState("");
     const [form] = Form.useForm();
 
@@ -35,11 +36,11 @@ const EditPage = (props) => {
         } else if (url) {
             form.setFieldsValue({
                 // 这里的 'image' 应该与 Form.Item 中的 name 属性一致  
-                imgUrl: url,
+                [imgName]: url,
             });
         } else {
             form.setFieldsValue({
-                imgUrl: null,
+                [imgName]: null,
             });
         }
         setFileList(newFileList)
@@ -47,11 +48,15 @@ const EditPage = (props) => {
 
     // 编辑时提交事件
     const editClick = async (params) => {
-        const res = await cocEdit({
-            ...recordValue,
-            ...params,
+        const res = await easyEdit({
+            collection,
+            data: {
+                ...recordValue,
+                ...params,
+            },
         })
         if (res?.success) {
+            message.success("编辑成功！")
             getQuary();
         }
     };
@@ -71,17 +76,13 @@ const EditPage = (props) => {
             id: getStringId(),
         };
 
-        // console.log(/value/, value);
-        // return;
-
         if (recordValue) {
-            console.log(/params/, params);
-            return;
             editClick(params);
         } else {
-            console.log(/value/, value);
-            return;
-            const res = await cocAdd(value)
+            const res = await easyAdd({
+                collection,
+                data: value,
+            })
             if (res?.success) {
                 message.success("添加成功！")
                 getQuary();

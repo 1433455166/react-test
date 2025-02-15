@@ -1,5 +1,13 @@
 .card-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: start;
+    align-items: start;
     width: 1000px;
+}
+
+.card-content-search {
+    width: 30%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
 }

@@ -7,7 +7,7 @@ import { database, pdCollection } from "../../../common/const";
 // 轮播图
 const PDCarouselImage = () => {
     const tableColumnList = [{
-        title: "建筑图片",
+        title: "轮播图",
         dataIndex: "imgUrl",
         render: (url) => <img src={url} alt='' style={{ width: 280, height: 100 }} />,
         type: 'upload'
@@ -20,6 +20,7 @@ const PDCarouselImage = () => {
                 collection={pdCollection.lbts}
                 title='pdds轮播图'
                 tableColumnList={tableColumnList}
+                showSearch={true}
             />
         </div>
     );

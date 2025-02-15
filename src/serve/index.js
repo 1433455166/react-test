@@ -18,9 +18,21 @@ export const cocDelete = (params) => {
     return res
 }
 
+// 列表项删除
+export const easyDelete = (params) => {
+    const res = request({ url: "/api/cc.lz.easyDelete", params }, "POST");
+    return res
+}
+
 // coc 添加
 export const cocAdd = (params) => {
     const res = request({ url: "/api/coc.add", params }, "POST");
+    return res
+}
+
+// 列表添加项
+export const easyAdd = (params) => {
+    const res = request({ url: "/api/cc.lz.easyAdd", params }, "POST");
     return res
 }
 
@@ -30,9 +42,21 @@ export const cocEdit = (params) => {
     return res
 }
 
+// 列表编辑项
+export const easyEdit = (params) => {
+    const res = request({ url: "/api/cc.lz.easyEdit", params }, "POST");
+    return res
+}
+
 // coc 编辑
 export const cocSearch = (params) => {
     const res = request({ url: "/api/coc.search", params }, "POST");
+    return res
+}
+
+// 列表搜索
+export const easySearch = (params) => {
+    const res = request({ url: "/api/cc.lz.easySearch", params }, "POST");
     return res
 }
 

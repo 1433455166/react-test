@@ -110,7 +110,7 @@ const items = [
 ];
 
 // 默认路由
-const defaultRouter = router.table
+const defaultRouter = router.dataBackground
 const defaultRouterComponents = items.find((item) => item.key === defaultRouter).components
 
 function App() {

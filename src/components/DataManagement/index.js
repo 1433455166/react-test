@@ -6,7 +6,7 @@ import { signOut } from '../../actions'
 import "./index.css";
 import EditPage from "./EditPage";
 import SearchCard from "./SearchCard";
-import { easyQueryList, cocDelete } from "../../serve"
+import { easyQueryList, easyDelete } from "../../serve"
 import { LOGIN_STATUS } from "../../common"
 import { COOKIE_NAME } from "../../common/const"
 import { getCookie } from '../../utils/cookie';
@@ -15,7 +15,7 @@ const { Column } = Table;
 
 // 数据管理组件
 const DataManagement = (props) => {
-    const { database, collection, title, tableColumnList } = props
+    const { database, collection, title, tableColumnList, showSearch } = props
     const [data, setData] = useState([]); // 表格数据
     const [loading, setLoading] = useState(false); // 表格是否加载
     const [isEdit, setIsEdit] = useState(false); // 是否是编辑页面
@@ -57,7 +57,7 @@ const DataManagement = (props) => {
     // 删除二次确认弹窗确认事件
     const handleOk = async (record) => {
         try {
-            const res = await cocDelete({ id: record?.id })
+            const res = await easyDelete({ id: record?.id, collection: collection })
             if (res?.success) {
                 message.success("删除成功！")
                 getQuary();
@@ -84,7 +84,7 @@ const DataManagement = (props) => {
                     新增数据
                 </Button>
             </div>
-            <SearchCard setData={setData} getQuary={getQuary} />
+            {showSearch && <SearchCard setData={setData} getQuary={getQuary} tableColumnList={tableColumnList} collection={collection} />}
             <Table dataSource={data} loading={loading}>
                 {(tableColumnList || []).map((tableColumn) => {
                     return (
@@ -147,6 +147,7 @@ const DataManagement = (props) => {
             setIsEdit={setIsEdit}
             tableColumnList={tableColumnList}
             title={title}
+            collection={collection}
         />
     );
 };
