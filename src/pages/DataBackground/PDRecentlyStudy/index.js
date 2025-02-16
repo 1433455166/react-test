@@ -15,7 +15,7 @@ const PDRecentlyStudy = () => {
         render: (url) => <img src={url} alt='' style={{ width: 80, height: 100 }} />,
         type: 'upload'
     }, {
-        title: "未知参数",
+        title: "观看位置",
         dataIndex: "havelearned",
         type: 'input'
     }]
@@ -27,6 +27,7 @@ const PDRecentlyStudy = () => {
             collection={pdCollection.recentlists}
             title='最近在学'
             tableColumnList={tableColumnList}
+            searchType={['title', 'havelearned']}
             showSearch={true}
         />
     </div>

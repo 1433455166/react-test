@@ -20,7 +20,7 @@ const PDCarouselImage = () => {
                 collection={pdCollection.lbts}
                 title='pdds轮播图'
                 tableColumnList={tableColumnList}
-                showSearch={true}
+                showSearch={false}
             />
         </div>
     );

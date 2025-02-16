@@ -5,7 +5,7 @@ import './index.css'
 import { easySearch } from "../../../serve"
 
 const SearchCard = (props) => {
-    const { setData, getQuary, tableColumnList, collection } = props
+    const { setData, getQuary, tableColumnList, collection, searchType } = props
     const [searchValue, setSearchValue] = useState()
 
     const searchOnchange = (value, type) => {
@@ -28,7 +28,7 @@ const SearchCard = (props) => {
     return (
         <Card style={{ marginBottom: 12 }}>
             <div className="card-content">
-                {(tableColumnList || []).map((tableColumn) => {
+                {(tableColumnList || []).filter((tc) => searchType?.includes(tc?.dataIndex)).map((tableColumn) => {
                     return (
                         <Input
                             addonBefore={tableColumn.title}

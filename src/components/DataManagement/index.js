@@ -15,7 +15,7 @@ const { Column } = Table;
 
 // 数据管理组件
 const DataManagement = (props) => {
-    const { database, collection, title, tableColumnList, showSearch } = props
+    const { database, collection, title, tableColumnList, showSearch, searchType } = props
     const [data, setData] = useState([]); // 表格数据
     const [loading, setLoading] = useState(false); // 表格是否加载
     const [isEdit, setIsEdit] = useState(false); // 是否是编辑页面
@@ -84,7 +84,15 @@ const DataManagement = (props) => {
                     新增数据
                 </Button>
             </div>
-            {showSearch && <SearchCard setData={setData} getQuary={getQuary} tableColumnList={tableColumnList} collection={collection} />}
+            {showSearch && (
+                <SearchCard 
+                    setData={setData} 
+                    getQuary={getQuary} 
+                    tableColumnList={tableColumnList} 
+                    collection={collection} 
+                    searchType={searchType}
+                />
+            )}
             <Table dataSource={data} loading={loading}>
                 {(tableColumnList || []).map((tableColumn) => {
                     return (
