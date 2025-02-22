@@ -3,10 +3,14 @@ import React, { useState } from "react";
 import { Card, Input, Button } from 'antd'
 import './index.css'
 import { easySearch } from "../../../serve"
+import { imgUrlAddFn } from '../../../utils/imgUrl';
+import { address } from "../../../common/const"
 
 const SearchCard = (props) => {
     const { setData, getQuary, tableColumnList, collection, searchType } = props
     const [searchValue, setSearchValue] = useState()
+
+    const imgName = tableColumnList?.find((column) => column?.type === 'upload')?.dataIndex
 
     const searchOnchange = (value, type) => {
         setSearchValue({
@@ -21,7 +25,13 @@ const SearchCard = (props) => {
             data: searchValue
         })
         if (res?.success) {
-            setData(res?.data?.docs);
+            const searchList = res?.data?.docs || []
+            setData(searchList.map((searchItem) => {
+                return {
+                    ...searchItem,
+                    [imgName]: imgUrlAddFn(searchItem?.[imgName], address?.backend),
+                }
+            }));
         }
     }
 

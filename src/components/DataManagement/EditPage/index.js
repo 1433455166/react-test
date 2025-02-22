@@ -48,11 +48,13 @@ const EditPage = (props) => {
 
     // 编辑时提交事件
     const editClick = async (params) => {
+        const url = params?.[imgName] ? new URL(params?.[imgName]) : ''
         const res = await easyEdit({
             collection,
             data: {
                 ...recordValue,
                 ...params,
+                [imgName]: url.pathname,
             },
         })
         if (res?.success) {
@@ -79,9 +81,13 @@ const EditPage = (props) => {
         if (recordValue) {
             editClick(params);
         } else {
+            const url = value?.[imgName] ? new URL(value?.[imgName]) : ''
             const res = await easyAdd({
                 collection,
-                data: value,
+                data: {
+                    ...value,
+                    [imgName]: url.pathname,
+                },
             })
             if (res?.success) {
                 message.success("添加成功！")
@@ -117,6 +123,12 @@ const EditPage = (props) => {
                         <Upload
                             action="http://localhost:3001/api/picture.upload"
                             listType="picture-card"
+                            data={(e) => {
+                                return {
+                                    ...e,
+                                    uploadAddress: collection
+                                }
+                            }}
                             fileList={fileList}
                             onPreview={handlePreview}
                             onChange={handleChange}

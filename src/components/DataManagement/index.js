@@ -8,8 +8,9 @@ import EditPage from "./EditPage";
 import SearchCard from "./SearchCard";
 import { easyQueryList, easyDelete } from "../../serve"
 import { LOGIN_STATUS } from "../../common"
-import { COOKIE_NAME } from "../../common/const"
+import { COOKIE_NAME, address } from "../../common/const"
 import { getCookie } from '../../utils/cookie';
+import { imgUrlAddFn } from '../../utils/imgUrl';
 
 const { Column } = Table;
 
@@ -33,7 +34,14 @@ const DataManagement = (props) => {
                 collection: collection
             })
             if (res?.success) {
-                setData(JSON.parse(res?.data?.data || '{}'));
+                const resData = JSON.parse(res?.data?.data || '{}') || [];
+                const imgName = tableColumnList?.find((column) => column?.type === 'upload')?.dataIndex;
+                setData(resData.map((resItem) => {
+                    return {
+                        ...resItem,
+                        [imgName]: imgUrlAddFn(resItem?.[imgName], address?.backend),
+                    }
+                }));
             }
             setLoading(false);
         } catch (error) {
