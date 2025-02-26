@@ -21,11 +21,13 @@ import Gobang from "./pages/Game/Gobang";
 import Table from "./pages/Table";
 import PDCarouselImage from "./pages/DataBackground/PDCarouselImage";
 import PDRecentlyStudy from "./pages/DataBackground/PDRecentlyStudy";
+import PDRecentlyStudyContent from "./pages/DataBackground/PDRecentlyStudyContent";
 import Filter from "./pages/Test/Filter";
 import Roll from "./pages/Test/Roll";
 import UniqueValueTest from "./pages/Test/UniqueValueTest";
 import User from "./components/User";
 import { router } from "./common/enum.ts";
+// import moment from "moment";
 // import Error from "./components/404";
 
 const items = [
@@ -109,6 +111,9 @@ const items = [
     },
 ];
 
+// 设置全局 locale 为中文
+// moment.locale('zh-cn');
+
 // 默认路由
 const defaultRouter = router.dataBackground
 const defaultRouterComponents = items.find((item) => item.key === defaultRouter).components
@@ -149,6 +154,7 @@ function App() {
                         <Route path={`/${router.dataBackground}`} exact component={PDCarouselImage} />
                         <Route path={`/${router.dataBackground}/pDCarouselImage`} exact component={PDCarouselImage} />
                         <Route path={`/${router.dataBackground}/pDRecentlyStudy`} exact component={PDRecentlyStudy} />
+                        <Route path={`/${router.dataBackground}/pDRecentlyStudyContent`} exact component={PDRecentlyStudyContent} />
                         <Route path={`/${router.other}`} exact component={Other} />
                         {/* 404 页面 */}
                         {/* <Route component={Error} /> */}

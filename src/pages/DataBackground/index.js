@@ -10,10 +10,6 @@ function DataBackground() {
     switch (value) {
       case "pDCarouselImage":
         return <PDCarouselImage />;
-    //   case "bouncyBall":
-    //     return <BouncyBall />;
-    //   case "gobang":
-    //       return <Gobang />;
       default:
         <div />;
     }

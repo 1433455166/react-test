@@ -13,6 +13,7 @@ export const database = {
 export const pdCollection = {
     lbts: "lbts", // 轮播图
     recentlists: "recentlists", // 最近在学
+    contentlists: "contentlists", // 最近在学 content
 }
 // 本地 端口号
 export const port = 3001

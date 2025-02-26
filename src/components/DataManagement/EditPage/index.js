@@ -1,15 +1,18 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import { Card, Form, Button, Input, Upload, InputNumber, Modal, message } from "antd";
+import { Card, Form, Button, Input, Upload, InputNumber, Modal, message, DatePicker } from "antd";
 import { getStringId } from "lz-js-tools";
 import "./index.css";
 import { easyAdd, easyEdit } from "../../../serve"
+import { timeStrToStamp } from "../../../utils/time"
 
 const EditPage = (props) => {
     const { setIsEdit, getQuary, recordValue, tableColumnList, title, collection } = props;
 
     const imgName = tableColumnList?.find((column) => column?.type === 'upload')?.dataIndex
+    const time = tableColumnList?.find((column) => column?.type === 'time')?.dataIndex
     // 类型是编辑还是新增
     const type = recordValue ? "编辑" : "新增";
 
@@ -55,6 +58,7 @@ const EditPage = (props) => {
                 ...recordValue,
                 ...params,
                 [imgName]: url.pathname,
+                [time]: params?.[time] && timeStrToStamp(params?.[time])
             },
         })
         if (res?.success) {
@@ -81,12 +85,13 @@ const EditPage = (props) => {
         if (recordValue) {
             editClick(params);
         } else {
-            const url = value?.[imgName] ? new URL(value?.[imgName]) : ''
+            const url = value?.[imgName] ? new URL(value?.[imgName]) : '';
             const res = await easyAdd({
                 collection,
                 data: {
                     ...value,
                     [imgName]: url.pathname,
+                    [time]: value?.[time] && timeStrToStamp(value?.[time])
                 },
             })
             if (res?.success) {
@@ -117,6 +122,8 @@ const EditPage = (props) => {
                 return <InputNumber />;
             case 'input': 
                 return <Input onBlur={tableColumn?.onBlur} />;
+            case 'time':
+                return <DatePicker showTime />;
             case 'upload': 
                 return (
                     <>
@@ -150,7 +157,7 @@ const EditPage = (props) => {
         }
     }
 
-    // console.log(/render/, fileList, form.getFieldsValue());
+    // console.log(/render/, recordValue);
 
     return (
         <Card style={{ width: '100%', height: "100%" }}>

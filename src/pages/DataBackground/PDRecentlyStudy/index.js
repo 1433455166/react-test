@@ -21,7 +21,7 @@ const PDRecentlyStudy = () => {
     }]
   return (
     <div className="data-background">
-        <LeftMenu />
+        <LeftMenu currentValue={'pDRecentlyStudy'} />
         <DataManagement
             database={database.pdDatabase}
             collection={pdCollection.recentlists}

@@ -11,6 +11,7 @@ import { LOGIN_STATUS } from "../../common"
 import { COOKIE_NAME, address } from "../../common/const"
 import { getCookie } from '../../utils/cookie';
 import { imgUrlAddFn } from '../../utils/imgUrl';
+import dayjs from "dayjs";
 
 const { Column } = Table;
 
@@ -113,6 +114,7 @@ const DataManagement = (props) => {
                                     ? tableColumn?.render(v, i, r) 
                                     : v
                             }}
+                            width={tableColumn?.width}
                         />
                     )
                 })}
@@ -126,7 +128,15 @@ const DataManagement = (props) => {
                                 <Button
                                     type="primary"
                                     onClick={() => {
-                                        setRecordValue(record);
+                                        const timeList = tableColumnList?.filter((column) => column?.type === 'time');
+                                        const timeObj = {};
+                                        timeList.forEach((time) => {
+                                            timeObj[time?.dataIndex] = dayjs(record?.[time?.dataIndex])
+                                        })
+                                        setRecordValue({
+                                            ...record,
+                                            ...timeObj,
+                                        });
                                         setIsEdit(true);
                                     }}
                                 >

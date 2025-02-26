@@ -4,11 +4,12 @@ import React, { useState } from "react";
 import {
   AppstoreOutlined,
   MailOutlined,
-//   SettingOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 
-function LeftMenu() {
-    const [current, setCurrent] = useState("pDCarouselImage");
+function LeftMenu(props) {
+    const { currentValue } = props;
+    const [current, setCurrent] = useState(currentValue || "pDCarouselImage");
 
     const items = [
         {
@@ -21,12 +22,11 @@ function LeftMenu() {
           key: "pDRecentlyStudy",
           icon: <AppstoreOutlined />,
         },
-        // {
-        //   label: <a href="#/game/gobang">五子棋</a>,
-        //   key: "gobang",
-        //   icon: <AppstoreOutlined />,
-        //   // disabled: true, // 是否可选
-        // }
+        {
+            label: <a href="#/dataBackground/pDRecentlyStudyContent">最近在学 content</a>,
+            key: "pDRecentlyStudyContent",
+            icon: <SettingOutlined />,
+          },
     ];
 
     const onClick = (e) => setCurrent(e.key);
