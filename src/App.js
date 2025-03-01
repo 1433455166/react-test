@@ -19,9 +19,8 @@ import TodoListTwo from "./pages/TodoListTwo";
 import Game from "./pages/Game";
 import Gobang from "./pages/Game/Gobang";
 import Table from "./pages/Table";
-import PDCarouselImage from "./pages/DataBackground/PDCarouselImage";
-import PDRecentlyStudy from "./pages/DataBackground/PDRecentlyStudy";
-import PDRecentlyStudyContent from "./pages/DataBackground/PDRecentlyStudyContent";
+import DataBackground from "./pages/DataBackground";
+import { pageDataSource } from "./pages/DataBackground/dataSource.js";
 import Filter from "./pages/Test/Filter";
 import Roll from "./pages/Test/Roll";
 import UniqueValueTest from "./pages/Test/UniqueValueTest";
@@ -72,7 +71,7 @@ const items = [
         label: <a href={`#/${router.dataBackground}`}>数据后台</a>,
         key: router.dataBackground,
         icon: <VerticalLeftOutlined />,
-        components: PDCarouselImage
+        components: DataBackground
     },
     {
         label: "其他-代办",
@@ -151,10 +150,10 @@ function App() {
                         <Route path={`/${router.game}/bouncyBall`} exact component={Game} />
                         <Route path={`/${router.game}/gobang`} exact component={Gobang} />
                         <Route path={`/${router.table}`} exact component={Table} />
-                        <Route path={`/${router.dataBackground}`} exact component={PDCarouselImage} />
-                        <Route path={`/${router.dataBackground}/pDCarouselImage`} exact component={PDCarouselImage} />
-                        <Route path={`/${router.dataBackground}/pDRecentlyStudy`} exact component={PDRecentlyStudy} />
-                        <Route path={`/${router.dataBackground}/pDRecentlyStudyContent`} exact component={PDRecentlyStudyContent} />
+                        <Route path={`/${router.dataBackground}`} exact component={DataBackground} />
+                        {pageDataSource.filter((pageData) => pageData?.router).map((page) => {
+                            return <Route path={`/${router.dataBackground}/${page.router}`} exact component={DataBackground} key={page.router} />
+                        })}
                         <Route path={`/${router.other}`} exact component={Other} />
                         {/* 404 页面 */}
                         {/* <Route component={Error} /> */}

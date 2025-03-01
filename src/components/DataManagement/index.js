@@ -23,11 +23,19 @@ const DataManagement = (props) => {
     const [isEdit, setIsEdit] = useState(false); // 是否是编辑页面
     const [recordValue, setRecordValue] = useState(); // 编辑数据
     const [showDeleteModal, setShowDeleteModal] = useState(false); // 删除二次确认框的显隐
+    const [messageApi, contextHolder] = message.useMessage();
 
     const dispatch = useDispatch();
     const signOutFn = () => dispatch(signOut());
 
     const getQuary = async () => {
+        if (!collection) {
+            messageApi.open({
+                type: 'error',
+                content: 'Collection name must be a String!',
+            });
+            return;
+        }
         setLoading(true);
         try {
             const res = await easyQueryList({
@@ -35,7 +43,7 @@ const DataManagement = (props) => {
                 collection: collection
             })
             if (res?.success) {
-                const resData = JSON.parse(res?.data?.data || '{}') || [];
+                const resData = res?.data?.data || [];
                 const imgName = tableColumnList?.find((column) => column?.type === 'upload')?.dataIndex;
                 setData(resData.map((resItem) => {
                     return {
@@ -47,6 +55,10 @@ const DataManagement = (props) => {
             setLoading(false);
         } catch (error) {
             console.log(/error/, error)
+            messageApi.open({
+                type: 'error',
+                content: error,
+            });
             if (error?.data?.errorStatus === LOGIN_STATUS.SIGN_OUT) {
                 const user = JSON.parse(getCookie(COOKIE_NAME.userMessage) || '{}')
                 if (!user?.userName) {
@@ -84,6 +96,7 @@ const DataManagement = (props) => {
 
     return !isEdit ? (
         <Card style={{ width: '100%', height: "100%" }}>
+            {contextHolder}
             <div className="top-wrap">
                 <div className="coc-title">{title || '等级数据'}</div>
                 <Button type="primary" onClick={() => {
