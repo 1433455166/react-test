@@ -17,7 +17,7 @@ const { Column } = Table;
 
 // 数据管理组件
 const DataManagement = (props) => {
-    const { database, collection, title, tableColumnList, showSearch, searchType } = props
+    const { database, collection, title, tableColumnList, showSearch, searchType, itemTableColumnList } = props
     const [data, setData] = useState([]); // 表格数据
     const [loading, setLoading] = useState(false); // 表格是否加载
     const [isEdit, setIsEdit] = useState(false); // 是否是编辑页面
@@ -45,10 +45,18 @@ const DataManagement = (props) => {
             if (res?.success) {
                 const resData = res?.data?.data || [];
                 const imgName = tableColumnList?.find((column) => column?.type === 'upload')?.dataIndex;
+                const table = tableColumnList?.find((column) => column?.type === 'table')?.dataIndex;
                 setData(resData.map((resItem) => {
                     return {
                         ...resItem,
                         [imgName]: imgUrlAddFn(resItem?.[imgName], address?.backend),
+                        [table]: (resItem?.[table] || []).map((resI) => {
+                            const img = itemTableColumnList?.find((column) => column?.type === 'upload')?.dataIndex;
+                            return {
+                                ...resI,
+                                [img]: imgUrlAddFn(resI?.[img], address?.backend),
+                            }
+                        })
                     }
                 }));
             }
@@ -115,7 +123,14 @@ const DataManagement = (props) => {
                     searchType={searchType}
                 />
             )}
-            <Table dataSource={data} loading={loading}>
+            <Table 
+                dataSource={data} 
+                loading={loading} 
+                pagination={{ 
+                    position: ['none', 'bottomCenter'],
+                    pageSize: 20
+                }}
+            >
                 {(tableColumnList || []).map((tableColumn) => {
                     return (
                         <Column
@@ -185,6 +200,7 @@ const DataManagement = (props) => {
             getQuary={getQuary}
             setIsEdit={setIsEdit}
             tableColumnList={tableColumnList}
+            itemTableColumnList={itemTableColumnList || []}
             title={title}
             collection={collection}
         />

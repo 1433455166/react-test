@@ -15,6 +15,21 @@ export const pdCollection = {
     recentlists: "recentlists", // 最近在学
     contentlists: "contentlists", // 最近在学 content
     indexbjtjs: "indexbjtjs", // 编辑推荐
+    indexrmbds: "indexrmbds", // 热门榜单
+    indexbzxs: "indexbzxs", // 本周新书
+    indexjqxs: "indexjqxs", // 近期新书
+    indexzswntjs: "indexzswntjs", // 专属为你推荐
+    detaildatas: "detaildatas", // 首页详情
+    xxhds: "xxhds", // 线下活动
+    xxscs: "xxscs", // 心选商城
+    soundlbts: "soundlbts", // 声音剧 轮播图
+    soundeverydays: "soundeverydays", // 声音剧 每日珍藏图片 轮播图
+    soundrecommends: "soundrecommends", // 声音剧 好剧推荐
+    soundverticals: "soundverticals", // 声音剧 周边商城 竖
+    llsreads: "llsreads", // 李雷慢读 当前在更
+    llsreadrs: "llsreadrs", // 李雷慢读 编辑推荐
+    todays: "todays", // 李雷慢读 今日限免
+    talks: "talks", // 李雷慢读 谈话节目
 }
 // 本地 端口号
 export const port = 3001

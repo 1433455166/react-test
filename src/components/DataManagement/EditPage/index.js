@@ -2,17 +2,21 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import { Card, Form, Button, Input, Upload, InputNumber, Modal, message, DatePicker } from "antd";
+import { Card, Form, Button, Input, Upload, InputNumber, Modal, message, DatePicker, Table, Space } from "antd";
 import { getStringId } from "lz-js-tools";
 import "./index.css";
 import { easyAdd, easyEdit } from "../../../serve"
 import { timeStrToStamp } from "../../../utils/time"
+import TableModal from "./tableModal"
+
+const { Column } = Table;
 
 const EditPage = (props) => {
-    const { setIsEdit, getQuary, recordValue, tableColumnList, title, collection } = props;
+    const { setIsEdit, getQuary, recordValue, tableColumnList, title, collection, itemTableColumnList } = props;
 
-    const imgName = tableColumnList?.find((column) => column?.type === 'upload')?.dataIndex
-    const time = tableColumnList?.find((column) => column?.type === 'time')?.dataIndex
+    const imgName = tableColumnList?.find((column) => column?.type === 'upload')?.dataIndex;
+    const time = tableColumnList?.find((column) => column?.type === 'time')?.dataIndex;
+    const table = tableColumnList?.find((column) => column?.type === 'table')?.dataIndex;
     // 类型是编辑还是新增
     const type = recordValue ? "编辑" : "新增";
 
@@ -27,6 +31,10 @@ const EditPage = (props) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState(recordValue?.[imgName]);
     const [previewTitle, setPreviewTitle] = useState("");
+    const [tableData, setTableData] = useState(recordValue?.[table]);
+    const [tableItem, setTableItem] = useState();
+    const [showModal, setShowModal] = useState(false); // table 弹窗的显隐
+    const [showDeleteModal, setShowDeleteModal] = useState(false); // table 删除二次确认框的显隐
     const [form] = Form.useForm();
 
     // 图片上传组件 onchange 事件
@@ -51,14 +59,22 @@ const EditPage = (props) => {
 
     // 编辑时提交事件
     const editClick = async (params) => {
-        const url = params?.[imgName] ? new URL(params?.[imgName]) : ''
+        const url = params?.[imgName] ? new URL(params?.[imgName]) : '';
         const res = await easyEdit({
             collection,
             data: {
                 ...recordValue,
                 ...params,
                 [imgName]: url.pathname,
-                [time]: params?.[time] && timeStrToStamp(params?.[time])
+                [time]: params?.[time] && timeStrToStamp(params?.[time]),
+                [table]: (tableData || []).map((item) => {
+                    const img = itemTableColumnList?.find((column) => column?.type === 'upload')?.dataIndex;
+                    const imgUrl = item?.[img] ? new URL(item?.[img]) : '';
+                    return {
+                        ...item,
+                        [img]: imgUrl.pathname,
+                    }
+                }),
             },
         })
         if (res?.success) {
@@ -91,7 +107,15 @@ const EditPage = (props) => {
                 data: {
                     ...value,
                     [imgName]: url.pathname,
-                    [time]: value?.[time] && timeStrToStamp(value?.[time])
+                    [time]: value?.[time] && timeStrToStamp(value?.[time]),
+                    [table]: (tableData || []).map((item) => {
+                        const img = itemTableColumnList?.find((column) => column?.type === 'upload')?.dataIndex;
+                        const imgUrl = item?.[img] ? new URL(item?.[img]) : '';
+                        return {
+                            ...item,
+                            [img]: imgUrl.pathname,
+                        }
+                    }),
                 },
             })
             if (res?.success) {
@@ -114,7 +138,6 @@ const EditPage = (props) => {
             file.name || file.url?.substring(file.url.lastIndexOf("/") + 1) || '图片放大镜'
         );
     };
-
     // 编辑组件
     const components = (tableColumn) => {
         switch (tableColumn?.type) {
@@ -124,6 +147,72 @@ const EditPage = (props) => {
                 return <Input onBlur={tableColumn?.onBlur} />;
             case 'time':
                 return <DatePicker showTime />;
+            case 'table':
+                return (
+                    <>
+                        <Button 
+                            onClick={() => {
+                                setShowModal(true)
+                            }}
+                            type="primary"
+                            style={{ marginBottom: 12 }}
+                        >
+                            添加
+                        </Button>
+                        <Table dataSource={tableData || []}>
+                            {(itemTableColumnList || []).map((tableColumn) => {
+                                return (
+                                    <Column
+                                        title={tableColumn?.title}
+                                        dataIndex={tableColumn?.dataIndex}
+                                        key={tableColumn?.dataIndex}
+                                        render={(v, i, r) => { 
+                                            return tableColumn?.render 
+                                                ? tableColumn?.render(v, i, r) 
+                                                : v
+                                        }}
+                                        width={tableColumn?.width}
+                                    />
+                                )
+                            })}
+                            <Column
+                                title="操作"
+                                dataIndex="action"
+                                key="action"
+                                render={(_v, record, index) => {
+                                    return (
+                                        <Space>
+                                            <Button
+                                                type="primary"
+                                                onClick={() => {
+                                                    setTableItem({
+                                                        ...record,
+                                                        index: index,
+                                                    })
+                                                    setShowModal(true)
+                                                }}
+                                            >
+                                                编辑
+                                            </Button>
+                                            <Button
+                                                type="primary"
+                                                danger
+                                                onClick={() => {
+                                                    setTableItem({
+                                                        index: index,
+                                                    })
+                                                    setShowDeleteModal(true)
+                                                }}
+                                            >
+                                                删除
+                                            </Button>
+                                        </Space>
+                                    );
+                                }}
+                            />
+                        </Table>
+                    </>
+                );
             case 'upload': 
                 return (
                     <>
@@ -155,10 +244,17 @@ const EditPage = (props) => {
             default: 
                 return <Input /> 
         }
+    };
+
+    const tableDeleteFn = () => {
+        const arr = [ ...tableData ];
+        const index = tableItem?.index; // 要删除的元素索引
+        arr.splice(index, 1);
+        setTableData(arr);
+        setShowDeleteModal(false)
     }
 
     // console.log(/render/, recordValue);
-
     return (
         <Card style={{ width: '100%', height: "100%" }}>
             <div className="top-wrap">
@@ -167,9 +263,9 @@ const EditPage = (props) => {
             <Form
                 form={form}
                 name="basic"
-                labelCol={{ span: 8 }}
+                labelCol={{ span: 3 }}
                 wrapperCol={{ span: 16 }}
-                style={{ maxWidth: 600 }}
+                // style={{ maxWidth: 600 }}
                 initialValues={recordValue}
                 onFinish={onFinish}
                 onFinishFailed={(err) => console.error(/onFinishFailed/, err)}
@@ -194,6 +290,28 @@ const EditPage = (props) => {
                     <Button onClick={() => setIsEdit(false)}>返回</Button>
                 </Form.Item>
             </Form>
+            <Modal
+                title="是否删除"
+                open={showDeleteModal}
+                onOk={() => tableDeleteFn()}
+                onCancel={() => setShowDeleteModal(false)}
+            >
+                确定删除吗？
+            </Modal>
+            {showModal && (
+                <TableModal 
+                    tableItem={tableItem}
+                    setTableItem={setTableItem}
+                    collection={collection}
+                    itemTableColumnList={itemTableColumnList}
+                    setShowModal={setShowModal}
+                    setTableData={setTableData}
+                    tableData={tableData}
+                    setTable={(e) => {
+                        form.setFieldValue(table, e)
+                    }}
+                />
+            )}
         </Card>
     );
 };
