@@ -5,6 +5,12 @@ import {
     AppstoreOutlined,
     MailOutlined,
     SettingOutlined,
+    PictureOutlined,
+    ShopOutlined,
+    ShoppingOutlined,
+    FireOutlined,
+    HighlightOutlined,
+    BookOutlined,
   } from "@ant-design/icons";
 import { Table } from "antd";
 
@@ -64,7 +70,7 @@ export const pageDataSource = [
         }],
         showSearch: false,
         router: 'pDCarouselImage',
-        icon: <MailOutlined />,
+        icon: <PictureOutlined />,
     },
     {
         database: database.pdDatabase,
@@ -87,7 +93,7 @@ export const pageDataSource = [
         searchType: ['title', 'havelearned'],
         showSearch: true,
         router: 'pDRecentlyStudy',
-        icon: <AppstoreOutlined />,
+        icon: <HighlightOutlined />,
     },
     {
         database: database.pdDatabase,
@@ -127,7 +133,7 @@ export const pageDataSource = [
         searchType: ['title', 'content', 'rt', 'airplay'],
         showSearch: false,
         router: 'pDRecentlyStudyContent',
-        icon: <SettingOutlined />,
+        icon: <HighlightOutlined />,
     },
     {
         router: 'pDEditRecommend',
@@ -161,9 +167,8 @@ export const pageDataSource = [
                 type: 'input',
             },
         ],
-        // searchType: ['title', 'content', 'rt', 'airplay'],
         showSearch: false,
-        icon: <SettingOutlined />,
+        icon: <FireOutlined />,
         database: database.pdDatabase,
     },
     {
@@ -202,42 +207,6 @@ export const pageDataSource = [
         icon: <SettingOutlined />,
         database: database.pdDatabase,
     },
-    // {
-    //     router: 'pDNewBooksThisWeek',
-    //     title: '本周新书',
-    //     collection: pdCollection.indexbzxs,
-    //     tableColumnList: [
-    //         {
-    //             title: "编号",
-    //             dataIndex: "pdsid",
-    //             type: 'input',
-    //         },
-    //         {
-    //             title: "标题",
-    //             dataIndex: "title",
-    //             type: 'input'
-    //         },
-    //         {
-    //             title: "图片",
-    //             dataIndex: "imgUrl",
-    //             render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
-    //             type: 'upload'
-    //         },
-    //         {
-    //             title: "描述",
-    //             dataIndex: "describe",
-    //             type: 'input'
-    //         },
-    //         {
-    //             title: "播放量",
-    //             dataIndex: "view",
-    //             type: 'input',
-    //         },
-    //     ],
-    //     showSearch: false,
-    //     icon: <SettingOutlined />,
-    //     database: database.pdDatabase,
-    // },
     {
         router: 'pDRecentBooks',
         title: '近期新书',
@@ -266,7 +235,7 @@ export const pageDataSource = [
             },
         ],
         showSearch: false,
-        icon: <SettingOutlined />,
+        icon: <BookOutlined />,
         database: database.pdDatabase,
     },
     {
@@ -302,7 +271,7 @@ export const pageDataSource = [
             },
         ],
         showSearch: false,
-        icon: <SettingOutlined />,
+        icon: <FireOutlined />,
         database: database.pdDatabase,
     },
     {
@@ -338,7 +307,7 @@ export const pageDataSource = [
             },
         ],
         showSearch: false,
-        icon: <SettingOutlined />,
+        icon: <AppstoreOutlined />,
         database: database.pdDatabase,
     },
     {
@@ -426,7 +395,7 @@ export const pageDataSource = [
             },
         ],
         showSearch: false,
-        icon: <SettingOutlined />,
+        icon: <ShopOutlined />,
         database: database.pdDatabase,
     },
     {
@@ -441,7 +410,7 @@ export const pageDataSource = [
         }],
         showSearch: false,
         router: 'pDSoundCarouselImage',
-        icon: <MailOutlined />,
+        icon: <PictureOutlined />,
     },
     {
         database: database.pdDatabase,
@@ -455,7 +424,7 @@ export const pageDataSource = [
         }],
         showSearch: false,
         router: 'pDSoundEveryday',
-        icon: <MailOutlined />,
+        icon: <PictureOutlined />,
     },
     {
         router: 'pDSoundRecommendedDramas',
@@ -490,7 +459,7 @@ export const pageDataSource = [
             },
         ],
         showSearch: false,
-        icon: <SettingOutlined />,
+        icon: <FireOutlined />,
         database: database.pdDatabase,
     },
     {
@@ -516,7 +485,7 @@ export const pageDataSource = [
             },
         ],
         showSearch: false,
-        icon: <SettingOutlined />,
+        icon: <ShoppingOutlined />,
         database: database.pdDatabase,
     },
     {
@@ -583,7 +552,7 @@ export const pageDataSource = [
             },
         ],
         showSearch: false,
-        icon: <SettingOutlined />,
+        icon: <FireOutlined />,
         database: database.pdDatabase,
     },
     {
@@ -640,7 +609,74 @@ export const pageDataSource = [
             },
         ],
         showSearch: false,
-        icon: <SettingOutlined />,
+        icon: <MailOutlined />,
+        database: database.pdDatabase,
+    },
+    {
+        router: 'pDMessages',
+        title: '消息',
+        collection: pdCollection.messages,
+        tableColumnList: [
+            {
+                title: "标题",
+                dataIndex: "title",
+                type: 'input'
+            },
+            {
+                title: "信息内容",
+                dataIndex: "msg",
+                type: 'input'
+            },
+            {
+                title: "时间",
+                dataIndex: "day",
+                type: 'input'
+            },
+        ],
+        showSearch: false,
+        icon: <MailOutlined />,
+        database: database.pdDatabase,
+    },
+    {
+        router: 'pDSearchtextlists',
+        title: '搜索后',
+        collection: pdCollection.searchtextlists,
+        tableColumnList: [
+            {
+                title: "标记",
+                dataIndex: "flag",
+                type: 'input'
+            },
+            {
+                title: "结果",
+                dataIndex: "result",
+                type: 'tags',
+                render: (v) => v?.join('，')
+            },
+        ],
+        showSearch: false,
+        icon: <MailOutlined />,
+        database: database.pdDatabase,
+    },
+    {
+        router: 'pDSearchlists',
+        title: '搜索时',
+        collection: pdCollection.searchlists,
+        tableColumnList: [
+            {
+                title: "标记",
+                dataIndex: "flag",
+                type: 'input'
+            },
+            {
+                title: "结果",
+                dataIndex: "result",
+                type: 'tags',
+                render: (v) => v?.join('，')
+            },
+        ],
+        showSearch: false,
+        icon: <MailOutlined />,
         database: database.pdDatabase,
     },
 ]

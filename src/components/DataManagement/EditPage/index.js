@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import { Card, Form, Button, Input, Upload, InputNumber, Modal, message, DatePicker, Table, Space } from "antd";
+import { Card, Form, Button, Input, Upload, InputNumber, Modal, message, DatePicker, Table, Space, Select } from "antd";
 import { getStringId } from "lz-js-tools";
 import "./index.css";
 import { easyAdd, easyEdit } from "../../../serve"
@@ -147,6 +147,8 @@ const EditPage = (props) => {
                 return <Input onBlur={tableColumn?.onBlur} />;
             case 'time':
                 return <DatePicker showTime />;
+            case 'tags':
+                return <Select mode="tags" />
             case 'table':
                 return (
                     <>

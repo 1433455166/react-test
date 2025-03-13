@@ -30,6 +30,9 @@ export const pdCollection = {
     llsreadrs: "llsreadrs", // 李雷慢读 编辑推荐
     todays: "todays", // 李雷慢读 今日限免
     talks: "talks", // 李雷慢读 谈话节目
+    messages: "messages", // 消息
+    searchlists: "searchlists", // 搜索时
+    searchtextlists: "searchtextlists", // 搜索后
 }
 // 本地 端口号
 export const port = 3001
