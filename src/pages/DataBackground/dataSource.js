@@ -1,4 +1,5 @@
 import { database, pdCollection } from "../../common/const";
+import { formatNumber } from "../../utils/number";
 import React from "react";
 import dayjs from "dayjs";
 import {
@@ -10,7 +11,7 @@ import {
     ShoppingOutlined,
     FireOutlined,
     HighlightOutlined,
-    BookOutlined,
+    // BookOutlined,
   } from "@ant-design/icons";
 import { Table } from "antd";
 
@@ -55,7 +56,13 @@ const xxscsItemTableColumnList =  [
         type: 'inputNumber',
     },
 ]
-
+// pd首页数据类型
+const typeDataSource = [
+    { label: '编辑推荐', value: 'indexbjtjs' },
+    { label: '热门榜单', value: 'indexrmbds' },
+    { label: '近期新书', value: 'indexjqxs' },
+    { label: '专属为你推荐', value: 'indexzswntjs' },
+]
 // 数据后台页面数据
 export const pageDataSource = [
     {
@@ -135,148 +142,148 @@ export const pageDataSource = [
         router: 'pDRecentlyStudyContent',
         icon: <HighlightOutlined />,
     },
-    {
-        router: 'pDEditRecommend',
-        title: '编辑推荐',
-        collection: pdCollection.indexbjtjs,
-        tableColumnList: [
-            {
-                title: "编号",
-                dataIndex: "pdsid",
-                type: 'input',
-            },
-            {
-                title: "标题",
-                dataIndex: "title",
-                type: 'input'
-            },
-            {
-                title: "图片",
-                dataIndex: "imgUrl",
-                render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
-                type: 'upload'
-            },
-            {
-                title: "描述",
-                dataIndex: "describe",
-                type: 'input'
-            },
-            {
-                title: "播放量",
-                dataIndex: "view",
-                type: 'input',
-            },
-        ],
-        showSearch: false,
-        icon: <FireOutlined />,
-        database: database.pdDatabase,
-    },
-    {
-        router: 'pDHotList',
-        title: '热门榜单',
-        collection: pdCollection.indexrmbds,
-        tableColumnList: [
-            {
-                title: "编号",
-                dataIndex: "pdsid",
-                type: 'input',
-            },
-            {
-                title: "标题",
-                dataIndex: "title",
-                type: 'input'
-            },
-            {
-                title: "图片",
-                dataIndex: "imgUrl",
-                render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
-                type: 'upload'
-            },
-            {
-                title: "描述",
-                dataIndex: "describe",
-                type: 'input'
-            },
-            {
-                title: "播放量",
-                dataIndex: "view",
-                type: 'input',
-            },
-        ],
-        showSearch: false,
-        icon: <SettingOutlined />,
-        database: database.pdDatabase,
-    },
-    {
-        router: 'pDRecentBooks',
-        title: '近期新书',
-        collection: pdCollection.indexjqxs,
-        tableColumnList: [
-            {
-                title: "编号",
-                dataIndex: "pdsid",
-                type: 'input',
-            },
-            {
-                title: "标题",
-                dataIndex: "title",
-                type: 'input'
-            },
-            {
-                title: "图片",
-                dataIndex: "imgUrl",
-                render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
-                type: 'upload'
-            },
-            {
-                title: "播放量",
-                dataIndex: "view",
-                type: 'input',
-            },
-        ],
-        showSearch: false,
-        icon: <BookOutlined />,
-        database: database.pdDatabase,
-    },
-    {
-        router: 'pDExclusivelyRecommendedForYou',
-        title: '专属为你推荐',
-        collection: pdCollection.indexzswntjs,
-        tableColumnList: [
-            {
-                title: "编号",
-                dataIndex: "pdsid",
-                type: 'input',
-            },
-            {
-                title: "标题",
-                dataIndex: "title",
-                type: 'input'
-            },
-            {
-                title: "图片",
-                dataIndex: "imgUrl",
-                render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
-                type: 'upload'
-            },
-            {
-                title: "描述",
-                dataIndex: "describe",
-                type: 'input'
-            },
-            {
-                title: "播放量",
-                dataIndex: "view",
-                type: 'input',
-            },
-        ],
-        showSearch: false,
-        icon: <FireOutlined />,
-        database: database.pdDatabase,
-    },
+    // {
+    //     router: 'pDEditRecommend',
+    //     title: '编辑推荐',
+    //     collection: pdCollection.indexbjtjs,
+    //     tableColumnList: [
+    //         {
+    //             title: "编号",
+    //             dataIndex: "pdsid",
+    //             type: 'input',
+    //         },
+    //         {
+    //             title: "标题",
+    //             dataIndex: "title",
+    //             type: 'input'
+    //         },
+    //         {
+    //             title: "图片",
+    //             dataIndex: "imgUrl",
+    //             render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
+    //             type: 'upload'
+    //         },
+    //         {
+    //             title: "描述",
+    //             dataIndex: "describe",
+    //             type: 'input'
+    //         },
+    //         {
+    //             title: "播放量",
+    //             dataIndex: "view",
+    //             type: 'input',
+    //         },
+    //     ],
+    //     showSearch: false,
+    //     icon: <FireOutlined />,
+    //     database: database.pdDatabase,
+    // },
+    // {
+    //     router: 'pDHotList',
+    //     title: '热门榜单',
+    //     collection: pdCollection.indexrmbds,
+    //     tableColumnList: [
+    //         {
+    //             title: "编号",
+    //             dataIndex: "pdsid",
+    //             type: 'input',
+    //         },
+    //         {
+    //             title: "标题",
+    //             dataIndex: "title",
+    //             type: 'input'
+    //         },
+    //         {
+    //             title: "图片",
+    //             dataIndex: "imgUrl",
+    //             render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
+    //             type: 'upload'
+    //         },
+    //         {
+    //             title: "描述",
+    //             dataIndex: "describe",
+    //             type: 'input'
+    //         },
+    //         {
+    //             title: "播放量",
+    //             dataIndex: "view",
+    //             type: 'input',
+    //         },
+    //     ],
+    //     showSearch: false,
+    //     icon: <SettingOutlined />,
+    //     database: database.pdDatabase,
+    // },
+    // {
+    //     router: 'pDRecentBooks',
+    //     title: '近期新书',
+    //     collection: pdCollection.indexjqxs,
+    //     tableColumnList: [
+    //         {
+    //             title: "编号",
+    //             dataIndex: "pdsid",
+    //             type: 'input',
+    //         },
+    //         {
+    //             title: "标题",
+    //             dataIndex: "title",
+    //             type: 'input'
+    //         },
+    //         {
+    //             title: "图片",
+    //             dataIndex: "imgUrl",
+    //             render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
+    //             type: 'upload'
+    //         },
+    //         {
+    //             title: "播放量",
+    //             dataIndex: "view",
+    //             type: 'input',
+    //         },
+    //     ],
+    //     showSearch: false,
+    //     icon: <BookOutlined />,
+    //     database: database.pdDatabase,
+    // },
+    // {
+    //     router: 'pDExclusivelyRecommendedForYou',
+    //     title: '专属为你推荐',
+    //     collection: pdCollection.indexzswntjs,
+    //     tableColumnList: [
+    //         {
+    //             title: "编号",
+    //             dataIndex: "pdsid",
+    //             type: 'input',
+    //         },
+    //         {
+    //             title: "标题",
+    //             dataIndex: "title",
+    //             type: 'input'
+    //         },
+    //         {
+    //             title: "图片",
+    //             dataIndex: "imgUrl",
+    //             render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
+    //             type: 'upload'
+    //         },
+    //         {
+    //             title: "描述",
+    //             dataIndex: "describe",
+    //             type: 'input'
+    //         },
+    //         {
+    //             title: "播放量",
+    //             dataIndex: "view",
+    //             type: 'input',
+    //         },
+    //     ],
+    //     showSearch: false,
+    //     icon: <FireOutlined />,
+    //     database: database.pdDatabase,
+    // },
     {
         router: 'pDHomeDetails',
-        title: '首页详情',
+        title: '首页大数据',
         collection: pdCollection.detaildatas,
         tableColumnList: [
             {
@@ -290,6 +297,12 @@ export const pageDataSource = [
                 type: 'input'
             },
             {
+                title: "描述",
+                dataIndex: "describe",
+                type: 'input',
+                width: 400,
+            },
+            {
                 title: "图片",
                 dataIndex: "imgUrl",
                 render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
@@ -297,16 +310,38 @@ export const pageDataSource = [
             },
             {
                 title: "作者",
-                dataIndex: "describe",
+                dataIndex: "author",
                 type: 'input'
             },
             {
                 title: "播放量",
                 dataIndex: "view",
                 type: 'inputNumber',
+                typeProps: {
+                    min: 0,
+                    step: 1,
+                    precision: 0, // 没有小数
+                    style: {
+                        width: 200,
+                    }
+                },
+                render: (value) => formatNumber(value),
+            },
+            {
+                title: "类型",
+                dataIndex: "type",
+                type: 'select',
+                render: (value) => typeDataSource?.find((type) => type?.value === value)?.label,
+                typeProps: {
+                    options: typeDataSource,
+                    style: {
+                        width: 200,
+                    }
+                }
             },
         ],
-        showSearch: false,
+        showSearch: true,
+        searchType: ['type'],
         icon: <AppstoreOutlined />,
         database: database.pdDatabase,
     },

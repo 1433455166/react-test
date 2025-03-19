@@ -103,7 +103,7 @@ const DataManagement = (props) => {
     };
 
     return !isEdit ? (
-        <Card style={{ width: '100%', height: "100%" }}>
+        <Card style={{ width: '100%', height: "100%", marginLeft: 256 }}>
             {contextHolder}
             <div className="top-wrap">
                 <div className="coc-title">{title || '等级数据'}</div>

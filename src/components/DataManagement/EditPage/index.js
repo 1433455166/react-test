@@ -140,15 +140,18 @@ const EditPage = (props) => {
     };
     // 编辑组件
     const components = (tableColumn) => {
+        const typeProps = tableColumn?.typeProps || {};
         switch (tableColumn?.type) {
             case 'inputNumber': 
-                return <InputNumber />;
+                return <InputNumber { ...typeProps } />;
             case 'input': 
                 return <Input onBlur={tableColumn?.onBlur} />;
             case 'time':
                 return <DatePicker showTime />;
             case 'tags':
                 return <Select mode="tags" />
+            case 'select':
+                return <Select { ...typeProps } />
             case 'table':
                 return (
                     <>

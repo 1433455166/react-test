@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
-import { Card, Input, Button } from 'antd'
+import { Card, Input, Button, Select } from 'antd'
 import './index.css'
 import { easySearch } from "../../../serve"
 import { imgUrlAddFn } from '../../../utils/imgUrl';
@@ -39,6 +39,22 @@ const SearchCard = (props) => {
         <Card style={{ marginBottom: 12 }}>
             <div className="card-content">
                 {(tableColumnList || []).filter((tc) => searchType?.includes(tc?.dataIndex)).map((tableColumn) => {
+                    const typeProps = tableColumn?.typeProps || {};
+                    switch (tableColumn?.type) {
+                        case "select":
+                            return (
+                                <>
+                                <span style={{ lineHeight: "32px" }}>{tableColumn?.title}：</span>
+                                <Select
+                                    { ...typeProps }
+                                    value={searchValue?.[tableColumn?.dataIndex]}
+                                    onChange={(e) => searchOnchange(e, tableColumn?.dataIndex)}
+                                    key={tableColumn?.dataIndex}
+                                    style={{ width: 200, marginRight: 12 }}
+                                />
+                                </>
+                            )
+                    }
                     return (
                         <Input
                             addonBefore={tableColumn.title}

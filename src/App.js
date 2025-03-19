@@ -132,7 +132,6 @@ function App() {
                         mode="horizontal"
                         items={items}
                     />
-
                     <User />
                 </div>
                 <div className="app-content">
