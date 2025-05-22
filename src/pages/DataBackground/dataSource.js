@@ -63,19 +63,53 @@ const typeDataSource = [
     { label: '近期新书', value: 'indexjqxs' },
     { label: '专属为你推荐', value: 'indexzswntjs' },
 ]
+// 轮播图数据类型
+const carouselDataSource = [
+    { label: '首页', value: 'index' },
+    { label: '声音剧', value: 'sound' },
+    { label: '声音剧 每日珍藏图片', value: 'soundEveryday' },
+    { label: '发现', value: 'find' },
+]
 // 数据后台页面数据
 export const pageDataSource = [
     {
         database: database.pdDatabase,
         collection: pdCollection.lbts,     
-        title: 'pdds轮播图',
-        tableColumnList: [{
-            title: "轮播图",
-            dataIndex: "imgUrl",
-            render: (url) => <img src={url} alt='' style={{ width: 280, height: 100 }} />,
-            type: 'upload'
-        }],
-        showSearch: false,
+        title: '轮播图',
+        tableColumnList: [
+            {
+                title: "轮播图",
+                dataIndex: "imgUrl",
+                render: (url, record) => {
+                    return (
+                        <img 
+                            src={url} 
+                            alt='' 
+                            style={
+                                record?.type === carouselDataSource[2].value 
+                                ? { width: 80, height: 100 }
+                                : { width: 280, height: 100 }
+                            } 
+                        />
+                    )
+                },
+                type: 'upload'
+            },
+            {
+                title: "类型",
+                dataIndex: "type",
+                type: 'select',
+                render: (value) => carouselDataSource?.find((type) => type?.value === value)?.label,
+                typeProps: {
+                    options: carouselDataSource,
+                    style: {
+                        width: 200,
+                    }
+                }
+            },
+        ],
+        showSearch: true,
+        searchType: ['type'],
         router: 'pDCarouselImage',
         icon: <PictureOutlined />,
     },
@@ -142,145 +176,6 @@ export const pageDataSource = [
         router: 'pDRecentlyStudyContent',
         icon: <HighlightOutlined />,
     },
-    // {
-    //     router: 'pDEditRecommend',
-    //     title: '编辑推荐',
-    //     collection: pdCollection.indexbjtjs,
-    //     tableColumnList: [
-    //         {
-    //             title: "编号",
-    //             dataIndex: "pdsid",
-    //             type: 'input',
-    //         },
-    //         {
-    //             title: "标题",
-    //             dataIndex: "title",
-    //             type: 'input'
-    //         },
-    //         {
-    //             title: "图片",
-    //             dataIndex: "imgUrl",
-    //             render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
-    //             type: 'upload'
-    //         },
-    //         {
-    //             title: "描述",
-    //             dataIndex: "describe",
-    //             type: 'input'
-    //         },
-    //         {
-    //             title: "播放量",
-    //             dataIndex: "view",
-    //             type: 'input',
-    //         },
-    //     ],
-    //     showSearch: false,
-    //     icon: <FireOutlined />,
-    //     database: database.pdDatabase,
-    // },
-    // {
-    //     router: 'pDHotList',
-    //     title: '热门榜单',
-    //     collection: pdCollection.indexrmbds,
-    //     tableColumnList: [
-    //         {
-    //             title: "编号",
-    //             dataIndex: "pdsid",
-    //             type: 'input',
-    //         },
-    //         {
-    //             title: "标题",
-    //             dataIndex: "title",
-    //             type: 'input'
-    //         },
-    //         {
-    //             title: "图片",
-    //             dataIndex: "imgUrl",
-    //             render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
-    //             type: 'upload'
-    //         },
-    //         {
-    //             title: "描述",
-    //             dataIndex: "describe",
-    //             type: 'input'
-    //         },
-    //         {
-    //             title: "播放量",
-    //             dataIndex: "view",
-    //             type: 'input',
-    //         },
-    //     ],
-    //     showSearch: false,
-    //     icon: <SettingOutlined />,
-    //     database: database.pdDatabase,
-    // },
-    // {
-    //     router: 'pDRecentBooks',
-    //     title: '近期新书',
-    //     collection: pdCollection.indexjqxs,
-    //     tableColumnList: [
-    //         {
-    //             title: "编号",
-    //             dataIndex: "pdsid",
-    //             type: 'input',
-    //         },
-    //         {
-    //             title: "标题",
-    //             dataIndex: "title",
-    //             type: 'input'
-    //         },
-    //         {
-    //             title: "图片",
-    //             dataIndex: "imgUrl",
-    //             render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
-    //             type: 'upload'
-    //         },
-    //         {
-    //             title: "播放量",
-    //             dataIndex: "view",
-    //             type: 'input',
-    //         },
-    //     ],
-    //     showSearch: false,
-    //     icon: <BookOutlined />,
-    //     database: database.pdDatabase,
-    // },
-    // {
-    //     router: 'pDExclusivelyRecommendedForYou',
-    //     title: '专属为你推荐',
-    //     collection: pdCollection.indexzswntjs,
-    //     tableColumnList: [
-    //         {
-    //             title: "编号",
-    //             dataIndex: "pdsid",
-    //             type: 'input',
-    //         },
-    //         {
-    //             title: "标题",
-    //             dataIndex: "title",
-    //             type: 'input'
-    //         },
-    //         {
-    //             title: "图片",
-    //             dataIndex: "imgUrl",
-    //             render: (url) => <img src={url} alt='' style={{ width: 100, height: 120 }} />,
-    //             type: 'upload'
-    //         },
-    //         {
-    //             title: "描述",
-    //             dataIndex: "describe",
-    //             type: 'input'
-    //         },
-    //         {
-    //             title: "播放量",
-    //             dataIndex: "view",
-    //             type: 'input',
-    //         },
-    //     ],
-    //     showSearch: false,
-    //     icon: <FireOutlined />,
-    //     database: database.pdDatabase,
-    // },
     {
         router: 'pDHomeDetails',
         title: '首页大数据',
@@ -433,34 +328,34 @@ export const pageDataSource = [
         icon: <ShopOutlined />,
         database: database.pdDatabase,
     },
-    {
-        database: database.pdDatabase,
-        collection: pdCollection.soundlbts,     
-        title: '声音剧 轮播图',
-        tableColumnList: [{
-            title: "轮播图",
-            dataIndex: "imgUrl",
-            render: (url) => <img src={url} alt='' style={{ width: 280, height: 100 }} />,
-            type: 'upload'
-        }],
-        showSearch: false,
-        router: 'pDSoundCarouselImage',
-        icon: <PictureOutlined />,
-    },
-    {
-        database: database.pdDatabase,
-        collection: pdCollection.soundeverydays,     
-        title: '声音剧 每日珍藏图片',
-        tableColumnList: [{
-            title: "轮播图",
-            dataIndex: "imgUrl",
-            render: (url) => <img src={url} alt='' style={{ width: 80, height: 100 }} />,
-            type: 'upload'
-        }],
-        showSearch: false,
-        router: 'pDSoundEveryday',
-        icon: <PictureOutlined />,
-    },
+    // {
+    //     database: database.pdDatabase,
+    //     collection: pdCollection.soundlbts,     
+    //     title: '声音剧 轮播图',
+    //     tableColumnList: [{
+    //         title: "轮播图",
+    //         dataIndex: "imgUrl",
+    //         render: (url) => <img src={url} alt='' style={{ width: 280, height: 100 }} />,
+    //         type: 'upload'
+    //     }],
+    //     showSearch: false,
+    //     router: 'pDSoundCarouselImage',
+    //     icon: <PictureOutlined />,
+    // },
+    // {
+    //     database: database.pdDatabase,
+    //     collection: pdCollection.soundeverydays,     
+    //     title: '声音剧 每日珍藏图片',
+    //     tableColumnList: [{
+    //         title: "轮播图",
+    //         dataIndex: "imgUrl",
+    //         render: (url) => <img src={url} alt='' style={{ width: 80, height: 100 }} />,
+    //         type: 'upload'
+    //     }],
+    //     showSearch: false,
+    //     router: 'pDSoundEveryday',
+    //     icon: <PictureOutlined />,
+    // },
     {
         router: 'pDSoundRecommendedDramas',
         title: '声音剧 好剧推荐',
@@ -708,6 +603,49 @@ export const pageDataSource = [
                 dataIndex: "result",
                 type: 'tags',
                 render: (v) => v?.join('，')
+            },
+        ],
+        showSearch: false,
+        icon: <MailOutlined />,
+        database: database.pdDatabase,
+    },
+    {
+        router: 'pDHallFames',
+        title: '名人堂',
+        collection: pdCollection.hallFames,
+        tableColumnList: [
+            {
+                title: "姓名",
+                dataIndex: "name",
+                type: 'input',
+                render: (name) => <div style={{ width: 49 }}>{name}</div>,
+            },
+            {
+                title: "图片",
+                dataIndex: "images",
+                render: (url) => <img src={url} alt='' style={{ height: 100 }} />,
+                type: 'upload'
+            },
+            {
+                title: "生命周期",
+                dataIndex: "lifespan",
+                type: 'timeInterval',
+                render: (time) => {
+                    return (
+                        <div style={{ width: 120 }}>
+                            {`${dayjs(time[0]).format('YYYY年MM月DD日')} - 
+                            ${dayjs(time[1]).format('YYYY年MM月DD日')}`}
+                        </div>
+                    );
+                },
+            },
+            {
+                title: "介绍",
+                dataIndex: "description",
+                type: 'textArea',
+                typeProps: {
+                    rows: 3,
+                },
             },
         ],
         showSearch: false,

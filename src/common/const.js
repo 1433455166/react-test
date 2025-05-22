@@ -33,6 +33,7 @@ export const pdCollection = {
     messages: "messages", // 消息
     searchlists: "searchlists", // 搜索时
     searchtextlists: "searchtextlists", // 搜索后
+    hallFames: "hallFames", // 名人堂
 }
 // 本地 端口号
 export const port = 3001

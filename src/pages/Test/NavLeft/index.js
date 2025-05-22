@@ -23,6 +23,11 @@ const items = [
     key: "UniqueValueTest",
     icon: <StepForwardOutlined />,
   },
+  {
+    label: <a href="#/test/extractText">提取文字</a>,
+    key: "extractText",
+    icon: <StepForwardOutlined />,
+  },
 ];
 
 const NavLeft = () => {

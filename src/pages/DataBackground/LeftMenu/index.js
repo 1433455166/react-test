@@ -16,7 +16,7 @@ function LeftMenu(props) {
 
     return (
         <Menu
-            style={{ width: 256, position: "fixed", top: 46, left: 0 }}
+            style={{ width: 256, position: "fixed", top: 46, left: 0, overflow: "scroll", height: "100%", paddingBottom: 49 }}
             selectedKeys={[currentValue || "pDCarouselImage"]}
             items={items}
             mode="inline"

@@ -10,12 +10,15 @@ import { timeStrToStamp } from "../../../utils/time"
 import TableModal from "./tableModal"
 
 const { Column } = Table;
+const { RangePicker } = DatePicker;
+const { TextArea } = Input;
 
 const EditPage = (props) => {
     const { setIsEdit, getQuary, recordValue, tableColumnList, title, collection, itemTableColumnList } = props;
 
     const imgName = tableColumnList?.find((column) => column?.type === 'upload')?.dataIndex;
     const time = tableColumnList?.find((column) => column?.type === 'time')?.dataIndex;
+    const timeInterval = tableColumnList?.find((column) => column?.type === 'timeInterval')?.dataIndex;
     const table = tableColumnList?.find((column) => column?.type === 'table')?.dataIndex;
     // 类型是编辑还是新增
     const type = recordValue ? "编辑" : "新增";
@@ -67,14 +70,18 @@ const EditPage = (props) => {
                 ...params,
                 [imgName]: url.pathname,
                 [time]: params?.[time] && timeStrToStamp(params?.[time]),
-                [table]: (tableData || []).map((item) => {
+                [timeInterval]: [
+                    params?.[timeInterval]?.[0] ? timeStrToStamp(params?.[timeInterval][0]) : null,
+                    params?.[timeInterval]?.[1] ? timeStrToStamp(params?.[timeInterval][1]) : null,
+                ],
+                [table]: table && tableData ? (tableData || []).map((item) => {
                     const img = itemTableColumnList?.find((column) => column?.type === 'upload')?.dataIndex;
                     const imgUrl = item?.[img] ? new URL(item?.[img]) : '';
                     return {
                         ...item,
                         [img]: imgUrl.pathname,
                     }
-                }),
+                }) : undefined,
             },
         })
         if (res?.success) {
@@ -108,14 +115,18 @@ const EditPage = (props) => {
                     ...value,
                     [imgName]: url.pathname,
                     [time]: value?.[time] && timeStrToStamp(value?.[time]),
-                    [table]: (tableData || []).map((item) => {
+                    [timeInterval]: [
+                        value?.[timeInterval]?.[0] ? timeStrToStamp(value?.[timeInterval][0]) : null,
+                        value?.[timeInterval]?.[1] ? timeStrToStamp(value?.[timeInterval][1]) : null,
+                    ],
+                    [table]: table && tableData ? (tableData || []).map((item) => {
                         const img = itemTableColumnList?.find((column) => column?.type === 'upload')?.dataIndex;
                         const imgUrl = item?.[img] ? new URL(item?.[img]) : '';
                         return {
                             ...item,
                             [img]: imgUrl.pathname,
                         }
-                    }),
+                    }) : undefined,
                 },
             })
             if (res?.success) {
@@ -148,6 +159,10 @@ const EditPage = (props) => {
                 return <Input onBlur={tableColumn?.onBlur} />;
             case 'time':
                 return <DatePicker showTime />;
+            case 'timeInterval':
+                return <RangePicker />;
+            case 'textArea':
+                return <TextArea { ...typeProps } />;
             case 'tags':
                 return <Select mode="tags" />
             case 'select':
@@ -261,7 +276,7 @@ const EditPage = (props) => {
 
     // console.log(/render/, recordValue);
     return (
-        <Card style={{ width: '100%', height: "100%" }}>
+        <Card style={{ width: '100%', height: "100vh" }}>
             <div className="top-wrap">
                 <div className="coc-title">{title}{type}</div>
             </div>

@@ -157,13 +157,19 @@ const DataManagement = (props) => {
                                     type="primary"
                                     onClick={() => {
                                         const timeList = tableColumnList?.filter((column) => column?.type === 'time');
+                                        const timeIntervalList = tableColumnList?.filter((column) => column?.type === 'timeInterval');
                                         const timeObj = {};
+                                        const timeIntervalObj = {};
                                         timeList.forEach((time) => {
                                             timeObj[time?.dataIndex] = dayjs(record?.[time?.dataIndex])
+                                        })
+                                        timeIntervalList.forEach((time) => {
+                                            timeIntervalObj[time?.dataIndex] = [dayjs(record?.[time?.dataIndex]?.[0]), dayjs(record?.[time?.dataIndex]?.[1])]
                                         })
                                         setRecordValue({
                                             ...record,
                                             ...timeObj,
+                                            ...timeIntervalObj,
                                         });
                                         setIsEdit(true);
                                     }}

@@ -13,6 +13,7 @@ import store from './store';
 // import { amountConversion } from "lz-js-tools";
 import "./App.css";
 import IntervalGetDom from "./pages/Test/IntervalGetDom";
+import ExtractText from "./pages/Test/ExtractText";
 import Other from "./pages/Other";
 import TodoList from "./pages/TodoList";
 import TodoListTwo from "./pages/TodoListTwo";
@@ -142,6 +143,7 @@ function App() {
                         <Route path={`/${router.test}`} exact component={items.find((item) => item.key === router.test).components} />
                         <Route path={`/${router.test}/filter`} exact component={Filter} />
                         <Route path={`/${router.test}/intervalGetDom`} exact component={IntervalGetDom} />
+                        <Route path={`/${router.test}/extractText`} exact component={ExtractText} />
                         <Route path={`/${router.test}/roll`} exact component={Roll} />
                         <Route path={`/${router.test}/UniqueValueTest`} exact component={UniqueValueTest} />
                         <Route path={`/${router.game}`} exact component={items.find((item) => item.key === router.game).components} />
