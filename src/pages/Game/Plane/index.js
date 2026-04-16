@@ -3,46 +3,83 @@
 /* eslint-disable default-case */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-unused-expressions */
-import React, { useRef, useEffect } from "react";
-import ReactDOM from "react-dom";
+import React, { useRef, useEffect, useState } from "react";
+// import ReactDOM from "react-dom"; // 不再需要 ReactDOM
 import "./index.css";
 
 const App = () => {
   const myRef = useRef();
-  useEffect(() => {
-    // 1.获取元素
-    const planebox = ReactDOM.findDOMNode(myRef.current);
-    const score = document.querySelector(".planebox strong");
-    let allscore = 0; // 计算总分
+  const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  
+  // 存储游戏状态和清理函数
+  const gameRef = useRef({
+    timers: [],
+    eventListeners: [],
+    ourplane: null,
+    cleanup: () => {}
+  });
+
+  // 清理所有游戏资源
+  const cleanupGame = () => {
+    const { timers, eventListeners } = gameRef.current;
+    
+    // 清理定时器
+    timers.forEach(timer => clearInterval(timer));
+    gameRef.current.timers = [];
+    
+    // 清理事件监听器
+    eventListeners.forEach(({ element, event, handler }) => {
+      element.removeEventListener(event, handler);
+    });
+    gameRef.current.eventListeners = [];
+    
+    // 清理DOM
+    const planebox = myRef.current;
+    if (planebox) {
+      // 移除所有游戏相关的img元素（保留分数显示）
+      const gameImages = planebox.querySelectorAll('img');
+      gameImages.forEach(img => {
+        if (planebox.contains(img)) {
+          planebox.removeChild(img);
+        }
+      });
+    }
+    
+    gameRef.current.ourplane = null;
+  };
+
+  // 初始化游戏
+  const initializeGame = () => {
+    const planebox = myRef.current;
+    if (!planebox) return;
+    
+    let allscore = 0;
     const ranNum = (min, max) => {
       return Math.round(Math.random() * (max - min)) + min;
     };
 
-    // 2.让背景运动(背景的垂直方向是重复的)
-    let bgposition = 0; // 背景的位置
+    // 背景运动
+    let bgposition = 0;
+    const bgtimer = setInterval(() => {
+      bgposition += 2;
+      planebox.style.backgroundPosition = `0 ${bgposition}px`;
+    }, 1000 / 60);
+    gameRef.current.timers.push(bgtimer);
 
-    let bgtimer =
-      planebox &&
-      setInterval(() => {
-        bgposition += 2;
-        planebox.style.backgroundPosition = `0 ${bgposition}px`;
-      }, 1000 / 60);
-
-    // 3.创建飞机角色的类(被继承的)
+    // 角色基类
     class Role {
       constructor(w, h, x, y, imgurl, boomurl) {
-        //w宽h高x水平位置y垂直位置imgurl图片路径boourl爆炸的图片路径
-        this.w = w; //赋值
-        this.h = h; //赋值
-        this.x = x; //赋值
-        this.y = y; //赋值
-        this.imgurl = imgurl; //赋值
-        this.boomurl = boomurl; //赋值
+        this.w = w;
+        this.h = h;
+        this.x = x;
+        this.y = y;
+        this.imgurl = imgurl;
+        this.boomurl = boomurl;
       }
       createRole() {
-        //创建角色图片
         this.roleimg = document.createElement("img");
-        this.roleimg.src = this.imgurl; //赋值图片地址
+        this.roleimg.src = this.imgurl;
         this.roleimg.style.cssText = `
                width:${this.w}px;
                height:${this.h}px;
@@ -53,30 +90,31 @@ const App = () => {
         planebox.appendChild(this.roleimg);
       }
     }
-    //5.子弹类
+    
+    // 子弹类
     class Bullet extends Role {
       constructor(w, h, x, y, imgurl) {
-        super(w, h, x, y, imgurl); //继承了属性和方法
-        this.createRole(); //创建子弹的角色。
-        this.bulletMove(); //子弹移动。
+        super(w, h, x, y, imgurl);
+        this.createRole();
+        this.bulletMove();
       }
 
       bulletMove() {
         this.timer = setInterval(() => {
-          //子弹运动，一个子弹一个定时器
           this.y -= 3;
           if (this.y <= -this.h) {
-            //判断子弹除了盒子区域
-            clearInterval(this.timer); //关闭定时器
-            planebox.removeChild(this.roleimg); //移出子弹
+            clearInterval(this.timer);
+            if (planebox.contains(this.roleimg)) {
+              planebox.removeChild(this.roleimg);
+            }
           }
           this.roleimg.style.top = this.y + "px";
-          this.bullethit(); //子弹碰撞敌机,子弹运动的过程中进行碰撞检测。
+          this.bullethit();
         }, 1000 / 600);
+        gameRef.current.timers.push(this.timer);
       }
 
       bullethit() {
-        //子弹碰撞敌机
         const enemys = document.querySelectorAll(".enemy");
         for (let i = 0; i < enemys.length; i++) {
           if (
@@ -86,148 +124,136 @@ const App = () => {
             this.y <= enemys[i].offsetTop + enemys[i].offsetHeight
           ) {
             try {
-              planebox.removeChild(this.roleimg); //子弹消失
+              if (planebox.contains(this.roleimg)) {
+                planebox.removeChild(this.roleimg);
+              }
             } catch (e) {
               return;
             }
-            clearInterval(this.timer); //子弹的定时器关闭
+            clearInterval(this.timer);
             enemys[i].blood--;
-            enemys[i].checkblood(); //将检测血量的方法绑定在每一个敌机身上。
+            enemys[i].checkblood();
           }
         }
       }
     }
-    //4.我方飞机类
+    
+    // 我方飞机类
     class Myplane extends Role {
       constructor(w, h, x, y, imgurl, boomurl) {
-        super(w, h, x, y, imgurl, boomurl); //继承了属性和方法
-        this.createRole(); //创建我方飞机的角色。
-        this.myplaneMove(); //我方飞机移动。
-        this.myplaneShoot(); //我方飞机发射子弹
+        super(w, h, x, y, imgurl, boomurl);
+        this.createRole();
+        this.myplaneMove();
+        this.myplaneShoot();
       }
       myplaneMove() {
-        //我方飞机移动(W87A65S83D68控制方向,K75控制发射子弹)
         let _this = this;
         let uptimer = null,
           downtimer = null,
           lefttimer = null,
           righttimer = null;
-        //按下按键触发事件
-        document.addEventListener("keydown", planemove);
-
-        function planemove(ev) {
-          //事件处理函数
+        
+        const planemove = (ev) => {
           var ev = ev || window.event;
           switch (ev.keyCode) {
             case 87:
-              moveup(); //普通函数
+              moveup();
               break;
             case 83:
-              movedown(); //普通函数
+              movedown();
               break;
             case 65:
-              moveleft(); //普通函数
+              moveleft();
               break;
             case 68:
-              moveright(); //普通函数
+              moveright();
               break;
           }
-          //向上运动
-          //如果同时上下运动，飞机出现抖动，不知道往那边。
+          
           function moveup() {
-            clearInterval(uptimer); //防止事件下面的定时器叠加
-            clearInterval(downtimer); //防止上下键同时按。
+            clearInterval(uptimer);
+            clearInterval(downtimer);
             uptimer = setInterval(() => {
-              _this.y -= 4; //速度叠加
+              _this.y -= 4;
               if (_this.y <= 0) {
                 _this.y = 0;
               }
-              _this.roleimg.style.top = _this.y + "px"; //赋值
+              _this.roleimg.style.top = _this.y + "px";
             }, 1000 / 60);
+            gameRef.current.timers.push(uptimer);
           }
-          //向下运动
+          
           function movedown() {
-            clearInterval(downtimer); //防止事件下面的定时器叠加
+            clearInterval(downtimer);
             clearInterval(uptimer);
             downtimer = setInterval(() => {
-              _this.y += 4; //速度叠加
+              _this.y += 4;
               if (_this.y >= planebox.offsetHeight - _this.h) {
                 _this.y = planebox.offsetHeight - _this.h;
               }
-              _this.roleimg.style.top = _this.y + "px"; //赋值
+              _this.roleimg.style.top = _this.y + "px";
             }, 1000 / 60);
+            gameRef.current.timers.push(downtimer);
           }
 
-          //左右运动
           function moveleft() {
-            clearInterval(lefttimer); //防止事件下面的定时器叠加
-            clearInterval(righttimer); //防止上下键同时按。
+            clearInterval(lefttimer);
+            clearInterval(righttimer);
             lefttimer = setInterval(() => {
-              _this.x -= 4; //速度叠加
+              _this.x -= 4;
               if (_this.x <= 0) {
                 _this.x = 0;
               }
-              _this.roleimg.style.left = _this.x + "px"; //赋值
+              _this.roleimg.style.left = _this.x + "px";
             }, 1000 / 60);
+            gameRef.current.timers.push(lefttimer);
           }
 
           function moveright() {
-            clearInterval(righttimer); //防止上下键同时按。
-            clearInterval(lefttimer); //防止事件下面的定时器叠加
+            clearInterval(righttimer);
+            clearInterval(lefttimer);
             righttimer = setInterval(() => {
-              _this.x += 4; //速度叠加
+              _this.x += 4;
               if (_this.x >= planebox.offsetWidth - _this.w) {
                 _this.x = planebox.offsetWidth - _this.w;
               }
-              _this.roleimg.style.left = _this.x + "px"; //赋值
+              _this.roleimg.style.left = _this.x + "px";
             }, 1000 / 60);
+            gameRef.current.timers.push(righttimer);
           }
+        };
 
-          document.addEventListener("keydown", function () {
-            var ev = ev || window.event;
-            if (ev.keyCode === 32) {
-              clearInterval(uptimer); //防止事件下面的定时器叠加
-              clearInterval(downtimer);
-              clearInterval(lefttimer); //防止事件下面的定时器叠加
-              clearInterval(righttimer); //防止上下键同时按。
-              // clearInterval(shoottimer);
-            }
-          });
-        }
+        document.addEventListener("keydown", planemove);
+        gameRef.current.eventListeners.push({ element: document, event: "keydown", handler: planemove });
 
-        //松开按键停止运动
-        document.addEventListener("keyup", function (ev) {
+        document.addEventListener("keyup", (ev) => {
           var ev = ev || window.event;
           if (ev.keyCode === 87) {
-            clearInterval(uptimer); //停止运动
+            clearInterval(uptimer);
           }
           if (ev.keyCode === 83) {
-            clearInterval(downtimer); //停止运动
+            clearInterval(downtimer);
           }
           if (ev.keyCode === 65) {
-            clearInterval(lefttimer); //停止运动
+            clearInterval(lefttimer);
           }
           if (ev.keyCode === 68) {
-            clearInterval(righttimer); //停止运动
+            clearInterval(righttimer);
           }
         });
       }
+      
       myplaneShoot() {
-        //我方飞机发射子弹
         let _this = this;
-        let shoottimer = null; //定时器返回值
-        document.addEventListener("keydown", shootbullet);
+        let shoottimer = null;
         let flag = true;
 
-        function shootbullet(ev) {
-          //事件处理函数
+        const shootbullet = (ev) => {
           var ev = ev || window.event;
           if (ev.keyCode === 75) {
             if (flag) {
-              //限制keydown事件不断触发
               flag = false;
-
-              function shoot() {
+              const shoot = () => {
                 new Bullet(
                   6,
                   14,
@@ -235,114 +261,109 @@ const App = () => {
                   _this.y - 14,
                   require("./img/bullet.png")
                 );
-              }
+              };
               shoot();
-              clearInterval(shoottimer); //防止定时器事件下面的叠加
-              shoottimer = setInterval(shoot, 20); // 每隔20ms产生一个子弹
+              clearInterval(shoottimer);
+              shoottimer = setInterval(shoot, 20);
+              gameRef.current.timers.push(shoottimer);
             }
           }
-        }
-        document.addEventListener("keyup", function () {
-          var ev = ev || window.event;
-          if (ev.keyCode === 75) {
-            clearInterval(shoottimer);
-            flag = true;
-          }
-        });
-
-        document.addEventListener("keydown", function () {
-          var ev = ev || window.event;
-          if (ev.keyCode === 32) {
-            // clearInterval(uptimer); //防止事件下面的定时器叠加
-            // clearInterval(downtimer);
-            // clearInterval(lefttimer); //防止事件下面的定时器叠加
-            // clearInterval(righttimer); //防止上下键同时按。
-            clearInterval(shoottimer);
-          }
-        });
+        };
+        
+        document.addEventListener("keydown", shootbullet);
+        gameRef.current.eventListeners.push({ element: document, event: "keydown", handler: shootbullet });
       }
     }
-    //6.敌方飞机类
+    
+    // 敌机类
     class Enemy extends Role {
       constructor(w, h, x, y, imgurl, boomurl, speed, blood, score) {
-        super(w, h, x, y, imgurl, boomurl); //继承的
-        this.speed = speed; //敌机的速度
-        this.blood = blood; //敌机的血量
-        this.score = score; //敌机的分数
-        this.createRole(); //创建敌机角色
-        this.enemyMove(); //敌机运动
-        this.setattribute(); //给敌机设置自定义或者默认属性
+        super(w, h, x, y, imgurl, boomurl);
+        this.speed = speed;
+        this.blood = blood;
+        this.score = score;
+        this.createRole();
+        this.enemyMove();
+        this.setattribute();
       }
+      
       setattribute() {
-        //给敌机设置自定义或者默认属性
-        let _this = this; //实例对象
+        let _this = this;
         this.roleimg.className = "enemy";
         this.roleimg.blood = this.blood;
         this.roleimg.score = this.score;
         this.roleimg.checkblood = function () {
-          //添加方法在敌机身上。
-
           if (this.blood === 0) {
-            //敌机爆炸，消失。
             this.src = _this.boomurl;
-            this.className = ""; //清除类名
-            clearInterval(this.timer); //关闭敌机运动的定时器
+            this.className = "";
+            clearInterval(this.timer);
             setTimeout(() => {
-              //敌机延迟400ms消失
-              planebox.removeChild(this);
+              if (planebox.contains(this)) {
+                planebox.removeChild(this);
+              }
             }, 400);
-            //计算分数
-            allscore += this.score; //分数累计
-            score.innerHTML = allscore; //赋值分数
+            allscore += this.score;
+            setScore(allscore);
           }
         };
       }
 
       enemyMove() {
-        //敌机运动
         this.roleimg.timer = setInterval(() => {
-          //每一个敌机图片对象添加一个定时器
-          this.y += this.speed; //添加速度
+          this.y += this.speed;
           if (this.y >= planebox.offsetHeight) {
             clearInterval(this.roleimg.timer);
-            planebox.removeChild(this.roleimg);
+            if (planebox.contains(this.roleimg)) {
+              planebox.removeChild(this.roleimg);
+            }
           }
-          this.enemyhit();
+          if (gameRef.current.ourplane && !gameOver) {
+            this.enemyhit();
+          }
           this.roleimg.style.top = this.y + "px";
         }, 1000 / 60);
+        gameRef.current.timers.push(this.roleimg.timer);
       }
 
       enemyhit() {
-        //敌机碰撞我方飞机
+        const ourplane = gameRef.current.ourplane;
         if (
+          ourplane &&
           this.x + this.w >= ourplane.x &&
           this.x <= ourplane.x + ourplane.w &&
           this.y + this.h >= ourplane.y &&
           this.y <= ourplane.y + ourplane.h
         ) {
+          setGameOver(true);
+          
           const enemys = document.querySelectorAll(".enemy");
           for (let i = 0; i < enemys.length; i++) {
             enemys[i].className = "";
-            clearInterval(enemys[i].timer);
+            if (enemys[i].timer) {
+              clearInterval(enemys[i].timer);
+            }
           }
-          ourplane.roleimg.src = ourplane.boomurl; //替换我方飞机的爆炸图片
-          clearInterval(bgtimer);
-          clearInterval(timer);
-          setTimeout(() => {
-            alert("game over");
-            location.reload(true); //刷新页面
-          }, 400);
+          
+          if (ourplane.roleimg) {
+            ourplane.roleimg.src = ourplane.boomurl;
+          }
+          
+          // 清理所有定时器但保留爆炸效果
+          gameRef.current.timers.forEach(timer => clearInterval(timer));
         }
       }
     }
-    //实例化随机产生敌机
-    let timer = setInterval(() => {
+    
+    // 生成敌机
+    const enemyTimer = setInterval(() => {
+      if (gameOver) {
+        clearInterval(enemyTimer);
+        return;
+      }
+      
       for (let i = 1; i <= ranNum(1, 3); i++) {
-        //每秒钟产生1-3架敌机
-        //随机产生1-20之间的数
         let num = ranNum(1, 20);
         if (num >= 1 && num < 15) {
-          //小飞机
           new Enemy(
             34,
             24,
@@ -355,7 +376,6 @@ const App = () => {
             1
           );
         } else if (num >= 15 && num < 20) {
-          //中飞机
           new Enemy(
             46,
             60,
@@ -368,7 +388,6 @@ const App = () => {
             3
           );
         } else if (num === 20) {
-          //大飞机
           new Enemy(
             110,
             164,
@@ -383,16 +402,20 @@ const App = () => {
         }
       }
     }, 1000);
-    // 按下空格暂停
-    document.addEventListener("keydown", function () {
+    gameRef.current.timers.push(enemyTimer);
+    
+    // 空格暂停
+    const handleSpaceKey = (ev) => {
       var ev = ev || window.event;
       if (ev.keyCode === 32) {
-        clearInterval(bgtimer);
-        clearInterval(timer);
+        gameRef.current.timers.forEach(timer => clearInterval(timer));
       }
-    });
-
-    let ourplane = new Myplane(
+    };
+    document.addEventListener("keydown", handleSpaceKey);
+    gameRef.current.eventListeners.push({ element: document, event: "keydown", handler: handleSpaceKey });
+    
+    // 初始化我方飞机
+    gameRef.current.ourplane = new Myplane(
       66,
       80,
       (planebox.offsetWidth - 66) / 2,
@@ -400,15 +423,77 @@ const App = () => {
       require("./img/myplane.gif"),
       require("./img/myplaneBoom.gif")
     );
-  }, []);
+  };
+
+  const restartGame = () => {
+    // 清理当前游戏
+    cleanupGame();
+    
+    // 重置状态
+    setGameOver(false);
+    setScore(0);
+    
+    // 延迟重新初始化
+    setTimeout(() => {
+      if (myRef.current && !gameOver) {
+        initializeGame();
+      }
+    }, 100);
+  };
+
+  useEffect(() => {
+    if (!gameOver) {
+      // 延迟初始化确保DOM渲染完成
+      const initTimer = setTimeout(() => {
+        initializeGame();
+      }, 100);
+      
+      return () => {
+        clearTimeout(initTimer);
+        cleanupGame();
+      };
+    }
+  }, [gameOver]);
 
   return (
     <div className="App">
       <div ref={myRef} className="planebox">
         <span>
-          分数：<strong>0</strong>
+          分数：<strong>{score}</strong>
         </span>
       </div>
+      
+      {gameOver && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '10px',
+            textAlign: 'center'
+          }}>
+            <h2>Game Over!</h2>
+            <p>最终得分: {score}</p>
+            <button onClick={restartGame} style={{
+              padding: '10px 20px',
+              fontSize: '16px',
+              cursor: 'pointer'
+            }}>
+              重新开始
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

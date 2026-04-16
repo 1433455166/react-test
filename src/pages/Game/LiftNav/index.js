@@ -1,5 +1,5 @@
 import { Menu } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppstoreOutlined,
   MailOutlined,
@@ -9,6 +9,20 @@ import "./index.css";
 
 function Game() {
   const [current, setCurrent] = useState("gobang");
+
+  // 从URL获取当前游戏
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes('/game/minesweeper')) {
+      setCurrent('minesweeper');
+    } else if (hash.includes('/game/gobang')) {
+      setCurrent('gobang');
+    } else if (hash.includes('/game/bouncyBall')) {
+      setCurrent('bouncyBall');
+    } else if (hash.includes('/game/plane')) {
+      setCurrent('plane');
+    }
+  }, []);
 
   const items = [
     {
@@ -27,6 +41,11 @@ function Game() {
       key: "gobang",
       icon: <AppstoreOutlined />,
       // disabled: true, // 是否可选
+    },
+    {
+      label: <a href="#/game/minesweeper">扫雷</a>,
+      key: "minesweeper",
+      icon: <AppstoreOutlined />,
     },
     {
       label: "其他-代办",

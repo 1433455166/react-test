@@ -9,24 +9,26 @@ import {
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { Provider } from 'react-redux';  
-import store from './store';  
+import store from './store.js';  
 // import { amountConversion } from "lz-js-tools";
 import "./App.css";
-import IntervalGetDom from "./pages/Test/IntervalGetDom";
-import ExtractText from "./pages/Test/ExtractText";
-import Other from "./pages/Other";
-import TodoList from "./pages/TodoList";
-import TodoListTwo from "./pages/TodoListTwo";
-import Game from "./pages/Game";
-import Gobang from "./pages/Game/Gobang";
-import Table from "./pages/Table";
-import DataBackground from "./pages/DataBackground";
+import IntervalGetDom from "./pages/Test/IntervalGetDom/index.js";
+import ExtractText from "./pages/Test/ExtractText/index.js";
+import Other from "./pages/Other/index.js";
+import TodoList from "./pages/TodoList/index.js";
+import TodoListTwo from "./pages/TodoListTwo/index.js";
+import Game from "./pages/Game/index.js";
+import Gobang from "./pages/Game/Gobang/index.js";
+import Table from "./pages/Table/index.js";
+import DataBackground from "./pages/DataBackground/index.js";
 import { pageDataSource } from "./pages/DataBackground/dataSource.js";
-import Filter from "./pages/Test/Filter";
-import Roll from "./pages/Test/Roll";
-import UniqueValueTest from "./pages/Test/UniqueValueTest";
-import User from "./components/User";
+import Filter from "./pages/Test/Filter/index.js";
+import Roll from "./pages/Test/Roll/index.js";
+import UniqueValueTest from "./pages/Test/UniqueValueTest/index.js";
+import User from "./components/User/index.js";
 import { router } from "./common/enum.ts";
+import Minesweeper from "./pages/Game/Minesweeper/index.js";
+// import GameIcon from "../public/svg/game.svg";
 // import moment from "moment";
 // import Error from "./components/404";
 
@@ -59,7 +61,7 @@ const items = [
     {
         label: <a href={`#/${router.game}`}>游戏</a>,
         key: router.game,
-        icon: <VerticalLeftOutlined />,
+        icon: <img src="/svg/game.svg" alt="游戏" style={{ width: '1em', height: '1em' }} />,
         components: Gobang
     },
     {
@@ -115,8 +117,8 @@ const items = [
 // moment.locale('zh-cn');
 
 // 默认路由
-const defaultRouter = router.dataBackground
-const defaultRouterComponents = items.find((item) => item.key === defaultRouter).components
+const defaultRouter = router.game
+const defaultRouterComponents = Game
 
 function App() {
     const [current, setCurrent] = useState(defaultRouter); // 默认页面
@@ -146,10 +148,11 @@ function App() {
                         <Route path={`/${router.test}/extractText`} exact component={ExtractText} />
                         <Route path={`/${router.test}/roll`} exact component={Roll} />
                         <Route path={`/${router.test}/UniqueValueTest`} exact component={UniqueValueTest} />
-                        <Route path={`/${router.game}`} exact component={items.find((item) => item.key === router.game).components} />
+                        <Route path={`/${router.game}`} exact component={Game} />
                         <Route path={`/${router.game}/plane`} exact component={Game} />
                         <Route path={`/${router.game}/bouncyBall`} exact component={Game} />
-                        <Route path={`/${router.game}/gobang`} exact component={Gobang} />
+                        <Route path={`/${router.game}/gobang`} exact component={Game} />
+                        <Route path={`/${router.game}/minesweeper`} exact component={Game} />
                         <Route path={`/${router.table}`} exact component={Table} />
                         <Route path={`/${router.dataBackground}`} exact component={DataBackground} />
                         {pageDataSource.filter((pageData) => pageData?.router).map((page) => {
@@ -158,11 +161,14 @@ function App() {
                         <Route path={`/${router.other}`} exact component={Other} />
                         {/* 404 页面 */}
                         {/* <Route component={Error} /> */}
-                        <Redirect from="/" to={`/${defaultRouter}`} />
+                        <Redirect from="/" to={`/${defaultRouter}/minesweeper`} />
                         {/* <Redirect from="/game" to="/game/gobang" /> */}
                     </HashRouter>
                 </div>
-                <div className="app-footer">1433455166@qq.com版权所有</div>
+                <div className="app-footer">
+                    1433455166@qq.com版权所有
+                    {/* <ScrollTips wrapStyle={{ maxWidth: 150 }}>あ绝对是把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好あ absolutely把搅拌好</ScrollTips> */}
+                </div>
             </div>
         </Provider>
     );

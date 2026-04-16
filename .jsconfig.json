@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@components/*": ["./src/components/*"]
+    },
+    "checkJs": true,
+    "module": "esnext",
+    "target": "es2017",
+    "jsx": "preserve"
+  },
+  "exclude": ["node_modules", "dist"]
+}

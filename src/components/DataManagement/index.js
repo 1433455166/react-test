@@ -11,6 +11,7 @@ import { LOGIN_STATUS } from "../../common"
 import { COOKIE_NAME, address } from "../../common/const"
 import { getCookie } from '../../utils/cookie';
 import { imgUrlAddFn } from '../../utils/imgUrl';
+import ScrollTips from '../ScrollTips';
 import dayjs from "dayjs";
 
 const { Column } = Table;
@@ -102,9 +103,22 @@ const DataManagement = (props) => {
         setShowDeleteModal(false);
     };
 
+    const testFn = () => { 
+        let text = `
+        
+        `;
+
+        // 根据换行符分割文本
+        let lines = text.split(/\r?\n/);
+
+        console.log(lines.filter((v)=> !!v));
+    }
+
     return !isEdit ? (
         <Card style={{ width: '100%', height: "100%", marginLeft: 256 }}>
             {contextHolder}
+            <Button onClick={testFn}>点击测试</Button>
+            <ScrollTips wrapStyle={{ maxWidth: 150 }}>啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好啊绝对是把搅拌好</ScrollTips>
             <div className="top-wrap">
                 <div className="coc-title">{title || '等级数据'}</div>
                 <Button type="primary" onClick={() => {
