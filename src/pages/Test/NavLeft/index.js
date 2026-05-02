@@ -1,5 +1,5 @@
 import { Menu } from "antd";
-import { StepForwardOutlined, FilterOutlined, RollbackOutlined } from "@ant-design/icons";
+import { StepForwardOutlined, FilterOutlined, RollbackOutlined, BookOutlined } from "@ant-design/icons";
 import React from "react";
 
 const items = [
@@ -27,6 +27,11 @@ const items = [
     label: <a href="#/test/extractText">提取文字</a>,
     key: "extractText",
     icon: <StepForwardOutlined />,
+  },
+  {
+    label: <a href="#/test/novelDataProcessing">小说数据处理</a>,
+    key: "novelDataProcessing",
+    icon: <BookOutlined />,
   },
 ];
 

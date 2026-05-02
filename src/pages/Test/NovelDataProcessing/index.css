@@ -1,0 +1,68 @@
+.novel-data-processing {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.novel-data-processing h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid #ef9a9a;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.test-content {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.test-content h3 {
+  color: #555;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.test-content pre {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  border: 1px solid #ddd;
+}
+
+.chinese-text {
+  background: #fff8e1;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #ffd54f;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #5d4037;
+}
+
+.stats {
+  background: #e8f5e8;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #a5d6a7;
+  margin-top: 10px;
+}
+
+.stats p {
+  margin: 5px 0;
+  color: #2e7d32;
+  font-weight: 500;
+}

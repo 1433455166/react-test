@@ -25,6 +25,7 @@ import { pageDataSource } from "./pages/DataBackground/dataSource.js";
 import Filter from "./pages/Test/Filter/index.js";
 import Roll from "./pages/Test/Roll/index.js";
 import UniqueValueTest from "./pages/Test/UniqueValueTest/index.js";
+import NovelDataProcessing from "./pages/Test/NovelDataProcessing/index.js";
 import User from "./components/User/index.js";
 import { router } from "./common/enum.ts";
 import Minesweeper from "./pages/Game/Minesweeper/index.js";
@@ -117,8 +118,8 @@ const items = [
 // moment.locale('zh-cn');
 
 // 默认路由
-const defaultRouter = router.game
-const defaultRouterComponents = Game
+const defaultRouter = router.test;
+const defaultRouterComponents = NovelDataProcessing;
 
 function App() {
     const [current, setCurrent] = useState(defaultRouter); // 默认页面
@@ -148,6 +149,7 @@ function App() {
                         <Route path={`/${router.test}/extractText`} exact component={ExtractText} />
                         <Route path={`/${router.test}/roll`} exact component={Roll} />
                         <Route path={`/${router.test}/UniqueValueTest`} exact component={UniqueValueTest} />
+                        <Route path={`/${router.test}/novelDataProcessing`} exact component={NovelDataProcessing} />
                         <Route path={`/${router.game}`} exact component={Game} />
                         <Route path={`/${router.game}/plane`} exact component={Game} />
                         <Route path={`/${router.game}/bouncyBall`} exact component={Game} />
@@ -161,7 +163,8 @@ function App() {
                         <Route path={`/${router.other}`} exact component={Other} />
                         {/* 404 页面 */}
                         {/* <Route component={Error} /> */}
-                        <Redirect from="/" to={`/${defaultRouter}/minesweeper`} />
+                        {/* <Redirect from="/" to={`/${defaultRouter}/minesweeper`} /> */}
+                        <Redirect from="/" to={`/${defaultRouter}/novelDataProcessing`} />
                         {/* <Redirect from="/game" to="/game/gobang" /> */}
                     </HashRouter>
                 </div>
