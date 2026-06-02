@@ -37,3 +37,28 @@
   line-height: 2;
   color: #333;
 }
+
+.primary-button-wrap {
+    display: flex;
+}
+
+.loading-text {
+    color: #ed5858;
+    line-height: 32px;
+    margin-left: 10px;
+    display: inline-flex;
+}
+
+.bounce-char {
+    display: inline-block;
+    animation: bounceOneByOne 2.2s ease-in-out infinite;
+}
+
+@keyframes bounceOneByOne {
+    0%, 8.33%, 100% {
+        transform: translateY(0);
+    }
+    4.17% {
+        transform: translateY(-8px);
+    }
+}
