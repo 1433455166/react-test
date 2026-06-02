@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Card, Form, Upload, Modal, message } from "antd";
 import "./index.css";
+import NavLeft from "../NavLeft";
 
 const EditPage = () => {
     const [fileList, setFileList] = useState([
@@ -68,6 +69,8 @@ const EditPage = () => {
 
     // console.log(/render/, recordValue);
     return (
+        <div className="extract-text-wrap">
+        <NavLeft />
         <Card style={{ width: '100%', height: "100vh" }}>
             <Form form={form}>
                 <Upload
@@ -97,6 +100,7 @@ const EditPage = () => {
                 </Modal>
             </Form>
         </Card>
+        </div>
     );
 };
 

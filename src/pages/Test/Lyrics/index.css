@@ -1,0 +1,39 @@
+.get-lyrics-wrap {
+  display: flex;
+}
+.get-lyrics {
+  padding: 20px;
+  flex: 1;
+}
+.get-lyrics
+.lyrics-form {
+  max-width: 500px;
+  margin-bottom: 20px;
+}
+
+.form-item {
+  margin-bottom: 16px;
+}
+
+.form-item label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.required {
+  color: #ff4d4f;
+}
+
+.lyrics-content {
+  margin-top: 20px;
+}
+
+.lyrics-text {
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-size: 14px;
+  line-height: 2;
+  color: #333;
+}

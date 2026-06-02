@@ -26,6 +26,7 @@ import Filter from "./pages/Test/Filter/index.js";
 import Roll from "./pages/Test/Roll/index.js";
 import UniqueValueTest from "./pages/Test/UniqueValueTest/index.js";
 import NovelDataProcessing from "./pages/Test/NovelDataProcessing/index.js";
+import Lyrics from "./pages/Test/Lyrics/index.js";
 import User from "./components/User/index.js";
 import { router } from "./common/enum.ts";
 import Minesweeper from "./pages/Game/Minesweeper/index.js";
@@ -150,6 +151,7 @@ function App() {
                         <Route path={`/${router.test}/roll`} exact component={Roll} />
                         <Route path={`/${router.test}/UniqueValueTest`} exact component={UniqueValueTest} />
                         <Route path={`/${router.test}/novelDataProcessing`} exact component={NovelDataProcessing} />
+                        <Route path={`/${router.test}/getLyrics`} exact component={Lyrics} />
                         <Route path={`/${router.game}`} exact component={Game} />
                         <Route path={`/${router.game}/plane`} exact component={Game} />
                         <Route path={`/${router.game}/bouncyBall`} exact component={Game} />

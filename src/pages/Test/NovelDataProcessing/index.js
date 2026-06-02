@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { TextAnalyzer, splitChapters, processChapterData } from '../../../utils/TextAnalyzer';
 import threeBoby1 from './data/threeBoby1.json';
 import './index.css';
+import NavLeft from "../NavLeft";
 
 const NovelDataProcessing = () => {
   const [novelContent, setNovelContent] = useState('');
@@ -75,32 +76,35 @@ const chapters = splitChapters(novelContent);
   }
 
   return (
-    <div className="novel-data-processing">
-      <h2>小说数据处理测试</h2>
-      {error && (
-        <div className="error-message">
-          加载小说内容失败: {error}
+    <div className="novel-data-processing-wrap">
+        <NavLeft />
+        <div className="novel-data-processing">
+        <h2>小说数据处理测试</h2>
+        {error && (
+            <div className="error-message">
+            加载小说内容失败: {error}
+            </div>
+        )}
+        <div className="test-content">
+            <h3>原始字符串分割结果:</h3>
+            {/* <pre>{JSON.stringify(list, null, 2)}</pre>  */}
+            
+            <h3>处理后的数组:</h3>
+            {/* <pre>{JSON.stringify(arr, null, 2)}</pre> */}
+            
+            <h3>第九章中文字符提取:</h3>
+            <div className="chinese-text">
+            {analyzer.chineseOnly}
+            </div>
+            
+            <h3>统计信息:</h3>
+            <div className="stats">
+            <p>总字符数: {analyzer.getCharacterCount()}</p>
+            <p>中文字符数: {analyzer.getChineseCharacterCount()}</p>
+            <p>章节段落数: {list.length}</p>
+            </div>
         </div>
-      )}
-      <div className="test-content">
-        <h3>原始字符串分割结果:</h3>
-        {/* <pre>{JSON.stringify(list, null, 2)}</pre>  */}
-        
-        <h3>处理后的数组:</h3>
-        {/* <pre>{JSON.stringify(arr, null, 2)}</pre> */}
-        
-        <h3>第九章中文字符提取:</h3>
-        <div className="chinese-text">
-          {analyzer.chineseOnly}
         </div>
-        
-        <h3>统计信息:</h3>
-        <div className="stats">
-          <p>总字符数: {analyzer.getCharacterCount()}</p>
-          <p>中文字符数: {analyzer.getChineseCharacterCount()}</p>
-          <p>章节段落数: {list.length}</p>
-        </div>
-      </div>
     </div>
   );
 };

@@ -1,6 +1,10 @@
+.novel-data-processing-wrap {
+  display: flex;
+}
+
 .novel-data-processing {
   padding: 20px;
-  max-width: 1200px;
+  width: 1200px;
   margin: 0 auto;
 }
 

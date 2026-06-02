@@ -33,6 +33,11 @@ const items = [
     key: "novelDataProcessing",
     icon: <BookOutlined />,
   },
+  {
+    label: <a href="#/test/getLyrics">歌词获取</a>,
+    key: "getLyrics",
+    icon: <BookOutlined />,
+  },
 ];
 
 const NavLeft = () => {
