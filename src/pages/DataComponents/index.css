@@ -1,0 +1,17 @@
+.data-components {
+    display: flex;
+    height: 100%;
+}
+
+.data-components-left {
+    width: 200px;
+    background: #f0f2f5;
+    border-right: 1px solid #e8e8e8;
+    height: calc(100vh - 70px);
+}
+
+.data-components-right {
+    flex: 1;
+    padding: 20px;
+    overflow: auto;
+}

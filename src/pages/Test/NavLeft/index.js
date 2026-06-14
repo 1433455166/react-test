@@ -1,6 +1,6 @@
 import { Menu } from "antd";
 import { StepForwardOutlined, FilterOutlined, RollbackOutlined, BookOutlined } from "@ant-design/icons";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const items = [
   {
@@ -41,11 +41,28 @@ const items = [
 ];
 
 const NavLeft = () => {
+  const getCurrentKey = () => {
+    const hash = window.location.hash;
+    const match = hash.match(/#\/test\/(\w+)/);
+    return match ? [match[1]] : ["novelDataProcessing"];
+  };
+
+  const [selectedKeys, setSelectedKeys] = useState(getCurrentKey());
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      setSelectedKeys(getCurrentKey());
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   return (
     <Menu
       style={{ width: 256 }}
       items={items}
       mode="inline"
+      selectedKeys={selectedKeys}
     />
   );
 };

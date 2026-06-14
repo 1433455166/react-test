@@ -65,8 +65,8 @@ const chapters = splitChapters(novelContent);
   useEffect(() => {
     if (!loading) {
     //   console.log('list:', list);
-      console.log('arr:', arr);
-      console.log('processChapterData:', arr.map(processChapterData));
+    //   console.log('arr:', arr);
+    //   console.log('processChapterData:', arr.map(processChapterData));
     //   console.log('analyzer.chineseOnly:', analyzer.chineseOnly);
     }
   }, [loading, list, arr, analyzer]);

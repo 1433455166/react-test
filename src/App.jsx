@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { HashRouter, Route, Redirect } from "react-router-dom";
 import {
     AppstoreOutlined,
@@ -21,6 +21,7 @@ import Game from "./pages/Game/index.js";
 import Gobang from "./pages/Game/Gobang/index.js";
 import Table from "./pages/Table/index.js";
 import DataBackground from "./pages/DataBackground/index.js";
+import DataComponents from "./pages/DataComponents/index.js";
 import { pageDataSource } from "./pages/DataBackground/dataSource.js";
 import Filter from "./pages/Test/Filter/index.js";
 import Roll from "./pages/Test/Roll/index.js";
@@ -36,23 +37,10 @@ import Minesweeper from "./pages/Game/Minesweeper/index.js";
 
 const items = [
     {
-        label: <a href={`#/${router.todoList}`}>列表</a>,
-        key: router.todoList,
-        icon: <MailOutlined />,
-        components: TodoList,
-    },
-    {
-        label: <a href={`#/${router.todoListTwo}`}>列表2.0</a>,
-        key: router.todoListTwo,
+        label: <a href={`#/${router.dataComponents}`}>数据组件</a>,
+        key: router.dataComponents,
         icon: <AppstoreOutlined />,
-        components: TodoListTwo,
-        // disabled: true, // 是否可选
-    },
-    {
-        label: <a href={`#/${router.other}`}>展开收起</a>,
-        key: router.other,
-        icon: <UpSquareOutlined />,
-        components: Other,
+        components: DataComponents,
     },
     {
         label: <a href={`#/${router.test}`}>组件测试</a>,
@@ -65,12 +53,6 @@ const items = [
         key: router.game,
         icon: <img src="/svg/game.svg" alt="游戏" style={{ width: '1em', height: '1em' }} />,
         components: Gobang
-    },
-    {
-        label: <a href={`#/${router.table}`}>数据/表格</a>,
-        key: router.table,
-        icon: <VerticalLeftOutlined />,
-        components: Table
     },
     {
         label: <a href={`#/${router.dataBackground}`}>数据后台</a>,
@@ -123,8 +105,29 @@ const defaultRouter = router.test;
 const defaultRouterComponents = NovelDataProcessing;
 
 function App() {
-    const [current, setCurrent] = useState(defaultRouter); // 默认页面
+    const getCurrentFromHash = () => {
+        const hash = window.location.hash;
+        if (!hash || hash === '#/') return defaultRouter;
+        const path = hash.replace('#/', '');
+        const firstPart = path.split('/')[0];
+        if (Object.values(router).includes(firstPart)) {
+            return firstPart;
+        }
+        return defaultRouter;
+    };
+
+    const [current, setCurrent] = useState(getCurrentFromHash);
+
     const onClick = (e) => setCurrent(e.key);
+
+    useEffect(() => {
+        const handleHashChange = () => {
+            setCurrent(getCurrentFromHash());
+        };
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
     // js工具包测试
     //   console.log(/js工具包测试/, { money: amountConversion(1000000.0) });
     return (
@@ -136,13 +139,14 @@ function App() {
                         selectedKeys={[current]}
                         mode="horizontal"
                         items={items}
+                        style={{ width: "100vw" }}
                     />
                     <User />
                 </div>
                 <div className="app-content">
                     <HashRouter>
-                        <Route path={`/${router.todoList}`} exact component={TodoList} />
-                        <Route path={`/${router.todoListTwo}`} exact component={TodoListTwo} />
+                        <Route path={`/${router.dataComponents}`} exact component={DataComponents} />
+                        <Route path={`/${router.dataComponents}/:subPage`} exact component={DataComponents} />
                         <Route path="/" exact component={defaultRouterComponents} /> {/* 默认路由 */}
                         <Route path={`/${router.test}`} exact component={items.find((item) => item.key === router.test).components} />
                         <Route path={`/${router.test}/filter`} exact component={Filter} />
@@ -157,16 +161,24 @@ function App() {
                         <Route path={`/${router.game}/bouncyBall`} exact component={Game} />
                         <Route path={`/${router.game}/gobang`} exact component={Game} />
                         <Route path={`/${router.game}/minesweeper`} exact component={Game} />
-                        <Route path={`/${router.table}`} exact component={Table} />
                         <Route path={`/${router.dataBackground}`} exact component={DataBackground} />
                         {pageDataSource.filter((pageData) => pageData?.router).map((page) => {
                             return <Route path={`/${router.dataBackground}/${page.router}`} exact component={DataBackground} key={page.router} />
                         })}
-                        <Route path={`/${router.other}`} exact component={Other} />
                         {/* 404 页面 */}
                         {/* <Route component={Error} /> */}
                         {/* <Redirect from="/" to={`/${defaultRouter}/minesweeper`} /> */}
-                        <Redirect from="/" to={`/${defaultRouter}/novelDataProcessing`} />
+                        <Route
+                            path="/"
+                            exact
+                            render={() => {
+                                const hash = window.location.hash;
+                                if (!hash || hash === '#/' || hash === '#') {
+                                    return <Redirect to={`/${defaultRouter}/novelDataProcessing`} />;
+                                }
+                                return null;
+                            }}
+                        />
                         {/* <Redirect from="/game" to="/game/gobang" /> */}
                     </HashRouter>
                 </div>

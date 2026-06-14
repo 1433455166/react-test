@@ -1,4 +1,5 @@
 export enum router {
+    dataComponents = 'dataComponents', // 数据组件
     todoList = 'todoList', // 列表
     todoListTwo = 'todoListTwo', // 列表2.0
     other = 'other', // 展开收起
