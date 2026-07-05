@@ -5,6 +5,39 @@
   padding: 20px;
   flex: 1;
 }
+.tips-card {
+  max-width: 640px;
+  margin: 20px 0;
+  background: #fff7e6 !important;
+  border-left: 4px solid #faad14;
+}
+
+.tips-card p {
+  margin-bottom: 8px;
+  color: #d48806;
+}
+
+.tips-card p:last-child {
+  margin-bottom: 0;
+}
+
+.tips-card .prompt-text {
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: monospace;
+  color: #595959;
+}
+
+.tips-card a {
+  color: #1890ff;
+  text-decoration: underline;
+}
+
+.tips-card a:hover {
+  color: #40a9ff;
+}
+
 .get-lyrics
 .lyrics-form {
   max-width: 500px;

@@ -1,0 +1,25 @@
+{
+  "editor.showUnused": true,
+  "editor.unusedCodeOpacity": 0.5,
+  "javascript.validate.enable": true,
+  "eslint.validate": ["javascript", "javascriptreact"],
+  "sonarlint.showUnused": true,
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": "variable.other.unused",
+        "settings": {
+          "foreground": "#999999",
+          "fontStyle": "italic"
+        }
+      },
+      {
+        "scope": "import.unused",
+        "settings": {
+          "foreground": "#999999",
+          "fontStyle": "italic"
+        }
+      }
+    ]
+  }
+}

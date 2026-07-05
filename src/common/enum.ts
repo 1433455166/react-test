@@ -7,4 +7,5 @@ export enum router {
     game = 'game', // 游戏
     table = 'table', // 数据/表格
     dataBackground = 'dataBackground', // 数据后台
+    aiTest = 'aiTest', // AI测试
 }

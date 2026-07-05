@@ -7,7 +7,6 @@
     "antd": "latest",
     "axios": "^1.5.0",
     "dayjs": "^1.11.13",
-    "lyrics-lib": "^2.0.0",
     "lz-js-tools": "^1.0.2",
     "moment": "^2.29.4",
     "react": "^19.0.0",

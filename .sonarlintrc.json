@@ -1,0 +1,7 @@
+{
+  "sonarlint.rules": {
+    "javascript:S1128": {
+      "level": "warning"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "extends": [
+    "react-app",
+    "react-app/jest"
+  ],
+  "plugins": [
+    "import"
+  ],
+  "rules": {
+    "no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "args": "none",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "no-unused-expressions": "warn",
+    "import/no-unused-modules": "warn",
+    "import/no-unused-imports": [
+      "warn",
+      {
+        "unusedExports": true
+      }
+    ]
+  }
+}

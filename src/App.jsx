@@ -22,6 +22,7 @@ import Gobang from "./pages/Game/Gobang/index.js";
 import Table from "./pages/Table/index.js";
 import DataBackground from "./pages/DataBackground/index.js";
 import DataComponents from "./pages/DataComponents/index.js";
+import AITest from "./pages/AITest/index.js";
 import { pageDataSource } from "./pages/DataBackground/dataSource.js";
 import Filter from "./pages/Test/Filter/index.js";
 import Roll from "./pages/Test/Roll/index.js";
@@ -59,6 +60,12 @@ const items = [
         key: router.dataBackground,
         icon: <VerticalLeftOutlined />,
         components: DataBackground
+    },
+    {
+        label: <a href={`#/${router.aiTest}`}>AI测试</a>,
+        key: router.aiTest,
+        icon: <VerticalLeftOutlined />,
+        components: AITest
     },
     {
         label: "其他-代办",
@@ -165,6 +172,7 @@ function App() {
                         {pageDataSource.filter((pageData) => pageData?.router).map((page) => {
                             return <Route path={`/${router.dataBackground}/${page.router}`} exact component={DataBackground} key={page.router} />
                         })}
+                        <Route path={`/${router.aiTest}`} exact component={AITest} />
                         {/* 404 页面 */}
                         {/* <Route component={Error} /> */}
                         {/* <Redirect from="/" to={`/${defaultRouter}/minesweeper`} /> */}
