@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "ajv": "^8.0.0",
     "@ant-design/icons": "^4.8.0",
     "antd": "latest",
     "axios": "^1.5.0",
@@ -18,7 +19,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "export BROWSER=none && export PORT=3001 && craco start",
+    "start": "export BROWSER=none && export PORT=3000 && craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "craco eject"

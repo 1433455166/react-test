@@ -27,8 +27,7 @@ export default [
         },
         rules: {
             "import/no-unresolved": "error", // 启用检查未解析导入的规则
-            "no-unused-vars": "warn", // 未使用的变量/导入改为警告
-            "import/no-unused-imports": "warn", // 未使用的导入改为警告
+            "no-unused-vars": "warn",
             "react/jsx-uses-react": "warn",
             "react/jsx-uses-vars": "warn"
         }

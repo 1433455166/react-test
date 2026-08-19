@@ -16,12 +16,6 @@
       }
     ],
     "no-unused-expressions": "warn",
-    "import/no-unused-modules": "warn",
-    "import/no-unused-imports": [
-      "warn",
-      {
-        "unusedExports": true
-      }
-    ]
+    "import/no-unused-modules": "warn"
   }
 }

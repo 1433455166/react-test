@@ -148,7 +148,8 @@ function App() {
                         items={items}
                         style={{ width: "100vw" }}
                     />
-                    <User />
+                    {/* 登录接口有问题，后面处理了再开放 */}
+                    {/* <User /> */}
                 </div>
                 <div className="app-content">
                     <HashRouter>

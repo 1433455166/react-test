@@ -1,11 +1,168 @@
-import React, { useState, useEffect } from "react";
-import { Select, Input, Button, Avatar, List, Spin } from "antd";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Select, Input, Button, Avatar, Spin } from "antd";
 import { SendOutlined, RobotOutlined, UserOutlined, CloudServerOutlined } from "@ant-design/icons";
 import "./index.css";
 
 const { Option } = Select;
 
+function renderInline(text) {
+  const nodes = [];
+  const regex = /(\*\*[^*]+\*\*)|(\*[^*]+\*)|(`[^`]+`)|(\[[^\]]+\]\([^)]+\))/g;
+  let lastIndex = 0;
+  let match;
+  let key = 0;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+
+    const token = match[0];
+    if (token.startsWith("**")) {
+      nodes.push(<strong key={key++}>{token.slice(2, -2)}</strong>);
+    } else if (token.startsWith("`")) {
+      nodes.push(<code key={key++}>{token.slice(1, -1)}</code>);
+    } else if (token.startsWith("[")) {
+      const linkMatch = /\[([^\]]+)\]\(([^)]+)\)/.exec(token);
+      if (linkMatch) {
+        nodes.push(
+          <a key={key++} href={linkMatch[2]} target="_blank" rel="noopener noreferrer">
+            {linkMatch[1]}
+          </a>
+        );
+      }
+    } else if (token.startsWith("*")) {
+      nodes.push(<em key={key++}>{token.slice(1, -1)}</em>);
+    }
+
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes;
+}
+
+function parseMarkdown(md) {
+  const lines = md.split("\n");
+  const blocks = [];
+  let i = 0;
+  let listKey = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (/^#{1,6}\s/.test(line)) {
+      const level = line.match(/^(#{1,6})\s/)[1].length;
+      const text = line.slice(level);
+      const Tag = `h${level}`;
+      blocks.push(<Tag key={`h-${i}`}>{renderInline(text)}</Tag>);
+      i++;
+      continue;
+    }
+
+    if (/^---+$/.test(line.trim())) {
+      blocks.push(<hr key={`hr-${i}`} />);
+      i++;
+      continue;
+    }
+
+    if (/^>\s/.test(line)) {
+      const quoteLines = [];
+      while (i < lines.length && /^>\s/.test(lines[i])) {
+        quoteLines.push(lines[i].slice(2));
+        i++;
+      }
+      blocks.push(
+        <blockquote key={`q-${i}`}>
+          {quoteLines.map((q, idx) => (
+            <p key={idx}>{renderInline(q)}</p>
+          ))}
+        </blockquote>
+      );
+      continue;
+    }
+
+    if (/^\s*[-*+]\s/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\s*[-*+]\s/.test(lines[i])) {
+        items.push(lines[i].replace(/^\s*[-*+]\s/, ""));
+        i++;
+      }
+      blocks.push(
+        <ul key={`ul-${listKey++}`}>
+          {items.map((item, idx) => (
+            <li key={idx}>{renderInline(item)}</li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+
+    if (/^\s*\d+\.\s/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\s*\d+\.\s/.test(lines[i])) {
+        items.push(lines[i].replace(/^\s*\d+\.\s/, ""));
+        i++;
+      }
+      blocks.push(
+        <ol key={`ol-${listKey++}`}>
+          {items.map((item, idx) => (
+            <li key={idx}>{renderInline(item)}</li>
+          ))}
+        </ol>
+      );
+      continue;
+    }
+
+    if (line.trim() === "") {
+      i++;
+      continue;
+    }
+
+    const paraLines = [line];
+    i++;
+    while (
+      i < lines.length &&
+      lines[i].trim() !== "" &&
+      !/^#{1,6}\s/.test(lines[i]) &&
+      !/^---+$/.test(lines[i].trim()) &&
+      !/^>\s/.test(lines[i]) &&
+      !/^\s*[-*+]\s/.test(lines[i]) &&
+      !/^\s*\d+\.\s/.test(lines[i])
+    ) {
+      paraLines.push(lines[i]);
+      i++;
+    }
+
+    blocks.push(
+      <p key={`p-${i}`}>{renderInline(paraLines.join(" "))}</p>
+    );
+  }
+
+  return blocks;
+}
+
+const MessageContent = ({ item }) => {
+  if (item.type === "user") {
+    return <div className="message-text">{item.content}</div>;
+  }
+  return (
+    <div className="message-text markdown-body">
+      {parseMarkdown(item.content)}
+    </div>
+  );
+};
+
 const apiOptions = [
+  {
+    value: "http://localhost:8317/",
+    label: "本地 cliproxyapi",
+    description: "http://localhost:8317/",
+    apiKey: "sk-mU8oCBy3Va4vZ0ttpegWaq8dB9eyEsMTvW5ojnPLP3JkKPCG"
+  },
   { 
     value: "http://localhost:8000/", 
     label: "本地Grok2API", 
@@ -15,13 +172,24 @@ const apiOptions = [
 ];
 
 function AITest() {
-  const [selectedApi, setSelectedApi] = useState(null);
+  const [selectedApi, setSelectedApi] = useState(apiOptions?.[0]);
   const [models, setModels] = useState([]);
   const [selectedModel, setSelectedModel] = useState("");
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     if (selectedApi) {
@@ -73,6 +241,7 @@ function AITest() {
     if (!inputValue.trim() || !selectedApi || !selectedModel) return;
 
     const userMessage = {
+      id: Date.now(),
       type: "user",
       content: inputValue,
       timestamp: new Date().toLocaleTimeString(),
@@ -82,7 +251,7 @@ function AITest() {
     setInputValue("");
     setIsLoading(true);
 
-    const aiMessageId = Date.now();
+    const aiMessageId = Date.now() + 1;
     let aiContent = "";
 
     try {
@@ -127,8 +296,7 @@ function AITest() {
             const dataStr = line.slice(6);
             
             if (dataStr === "[DONE]") {
-              reader.releaseLock();
-              return;
+              break;
             }
 
             try {
@@ -186,13 +354,13 @@ function AITest() {
         errorMessage = `请求失败: ${error.message}`;
       }
       
-      const aiMessage = {
-        type: "ai",
-        content: aiContent || errorMessage,
-        timestamp: new Date().toLocaleTimeString(),
-      };
       if (!aiContent) {
-        setMessages((prev) => [...prev, aiMessage]);
+        setMessages((prev) => [...prev, {
+          id: aiMessageId,
+          type: "ai",
+          content: errorMessage,
+          timestamp: new Date().toLocaleTimeString(),
+        }]);
       }
     } finally {
       setIsLoading(false);
@@ -260,31 +428,28 @@ function AITest() {
             <span className="chat-model-info">({selectedModel})</span>
           </div>
 
-          <div className="chat-messages">
-            <List
-              dataSource={messages}
-              renderItem={(item) => (
-                <List.Item
-                  className={`message-item ${item.type}`}
-                  key={item.timestamp + Math.random()}
-                >
-                  <Avatar
-                    icon={
-                      item.type === "user" ? (
-                        <UserOutlined />
-                      ) : (
-                        <RobotOutlined />
-                      )
-                    }
-                    className={`avatar ${item.type}`}
-                  />
-                  <div className="message-content">
-                    <div className="message-text">{item.content}</div>
-                    <div className="message-time">{item.timestamp}</div>
-                  </div>
-                </List.Item>
-              )}
-            />
+          <div className="chat-messages" ref={messagesEndRef}>
+            {messages.map((item) => (
+              <div
+                className={`message-item ${item.type}`}
+                key={item.id}
+              >
+                <Avatar
+                  icon={
+                    item.type === "user" ? (
+                      <UserOutlined />
+                    ) : (
+                      <RobotOutlined />
+                    )
+                  }
+                  className={`avatar ${item.type}`}
+                />
+                <div className="message-content">
+                  <MessageContent item={item} />
+                  <div className="message-time">{item.timestamp}</div>
+                </div>
+              </div>
+            ))}
             {isLoading && (
               <div className="loading-message">
                 <RobotOutlined spin />
