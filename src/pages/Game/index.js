@@ -4,6 +4,7 @@ import Plane from "./Plane";
 import BouncyBall from "./BouncyBall";
 import Gobang from "./Gobang";
 import Minesweeper from "./Minesweeper";
+import Sudoku from "./Sudoku";
 import {
   AppstoreOutlined,
   MailOutlined,
@@ -17,7 +18,9 @@ function Game() {
   // 从URL获取当前游戏
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash.includes('/game/minesweeper')) {
+    if (hash.includes('/game/sudoku')) {
+      setCurrent('sudoku');
+    } else if (hash.includes('/game/minesweeper')) {
       setCurrent('minesweeper');
     } else if (hash.includes('/game/gobang')) {
       setCurrent('gobang');
@@ -38,7 +41,7 @@ function Game() {
       label: <a href="#/game/bouncyBall">弹弹球</a>,
       key: "bouncyBall",
       icon: <AppstoreOutlined />,
-      // disabled: true, // 是否可选
+    //   disabled: true, // 是否可选
     },
     {
       label: <a href="#/game/gobang">五子棋</a>,
@@ -49,6 +52,11 @@ function Game() {
     {
       label: <a href="#/game/minesweeper">扫雷</a>,
       key: "minesweeper",
+      icon: <AppstoreOutlined />,
+    },
+    {
+      label: <a href="#/game/sudoku">数独</a>,
+      key: "sudoku",
       icon: <AppstoreOutlined />,
     },
     {
@@ -98,6 +106,8 @@ function Game() {
           return <Gobang />;
       case "minesweeper":
         return <Minesweeper />;
+      case "sudoku":
+        return <Sudoku />;
       default:
         <div />;
     }

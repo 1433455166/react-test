@@ -1,0 +1,261 @@
+.sudoku-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sudoku-header {
+  margin-bottom: 20px;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.sudoku-title {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.sudoku-info {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.sudoku-timer,
+.sudoku-mistakes {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sudoku-difficulty {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.difficulty-btn {
+  padding: 8px 16px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  color: #555;
+}
+
+.difficulty-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+}
+
+.difficulty-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.sudoku-board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  width: 414px;
+  height: 414px;
+  background-color: #333;
+  border: 3px solid #333;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.sudoku-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  background-color: #fff;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  font-size: 22px;
+  font-family: 'Courier New', monospace;
+  transition: background-color 0.1s ease;
+  position: relative;
+}
+
+.sudoku-cell:hover {
+  background-color: #e8e8ff;
+}
+
+.sudoku-cell.fixed {
+  background-color: #f0f0f0;
+  color: #333;
+  cursor: default;
+}
+
+.sudoku-cell.fixed:hover {
+  background-color: #f0f0f0;
+}
+
+.sudoku-cell.selected {
+  background-color: #c5cae9 !important;
+  box-shadow: inset 0 0 0 2px #3f51b5;
+}
+
+.sudoku-cell.highlighted {
+  background-color: #e8eaf6;
+}
+
+.sudoku-cell.same-number {
+  background-color: #bbdefb;
+}
+
+.sudoku-cell.error {
+  color: #f44336;
+}
+
+.sudoku-cell.border-right {
+  border-right: 2px solid #333;
+}
+
+.sudoku-cell.border-left {
+  border-left: 2px solid #333;
+}
+
+.sudoku-cell.border-top {
+  border-top: 2px solid #333;
+}
+
+.cell-value {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.cell-candidates {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  gap: 0;
+}
+
+.candidate-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #9e9e9e;
+  font-weight: normal;
+  line-height: 1;
+}
+
+.candidate-num.hidden {
+  visibility: hidden;
+}
+
+.candidate-num.visible {
+  color: #78909c;
+}
+
+.sudoku-cell.selected .candidate-num.visible {
+  color: #5c6bc0;
+}
+
+.sudoku-controls {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.sudoku-numbers {
+  display: flex;
+  gap: 8px;
+}
+
+.number-btn {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  color: #555;
+  transition: all 0.15s ease;
+}
+
+.number-btn:hover:not(.disabled) {
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+}
+
+.number-btn:active:not(.disabled) {
+  transform: translateY(0);
+}
+
+.number-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: #f5f5f5;
+  color: #bbb;
+  border-color: #e0e0e0;
+}
+
+.number-btn.erase-btn {
+  font-size: 22px;
+}
+
+.restart-btn {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.restart-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+}
+
+.restart-btn:active {
+  transform: translateY(0);
+}
+
+.game-status-message {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.win-message {
+  color: #4caf50;
+  text-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}

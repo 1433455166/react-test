@@ -188,7 +188,7 @@ const App = () => {
 
     return (
         <div className="gobang">
-            <LiftNav />
+            {/* <LiftNav /> */}
             <div>
                 <div className="gobang-title">五子棋</div>
                 <Card
