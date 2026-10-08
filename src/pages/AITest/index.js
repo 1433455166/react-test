@@ -15,6 +15,8 @@ import {
   CloseOutlined,
   DeleteOutlined,
   PictureOutlined,
+  BulbOutlined,
+  BulbFilled,
 } from "@ant-design/icons";
 import "./index.css";
 
@@ -271,6 +273,7 @@ const AITest = () => {
   const [selectedTopic, setSelectedTopic] = useState(TOPICS[0]);
   const [selectedMode, setSelectedMode] = useState(MODES[0].key);
   const [systemTheme, setSystemTheme] = useState("light");
+  const [themeOverride, setThemeOverride] = useState(null);
 
   const [isLocalMode, setIsLocalMode] = useState(false);
   const [activePreset, setActivePreset] = useState(null);
@@ -302,8 +305,15 @@ const AITest = () => {
   }, []);
 
   const resolvedTheme = (() => {
+    if (themeOverride) return themeOverride;
     if (selectedTopic.theme === "auto") return systemTheme;
     return selectedTopic.theme;
+  })();
+
+  const currentThemeSource = (() => {
+    if (themeOverride) return `手动: ${themeOverride === "dark" ? "深色" : "浅色"}`;
+    if (selectedTopic.theme === "auto") return `跟随系统(${systemTheme === "dark" ? "深色" : "浅色"})`;
+    return `主题预设: ${selectedTopic.theme === "dark" ? "深色" : "浅色"}`;
   })();
 
   useEffect(() => {
@@ -679,10 +689,25 @@ const AITest = () => {
       <div className="ai-page-header">
         <div className="ai-title-wrap">
           <h1 className="ai-main-title">AI 对话助手</h1>
-          <span className="ai-theme-indicator">
-            {resolvedTheme === "dark" ? "🌙 深色" : "☀️ 浅色"}
-            {selectedTopic.theme === "auto" && " (跟随系统)"}
+          <span className="ai-theme-indicator" title={currentThemeSource}>
+            {resolvedTheme === "dark" ? "🌙" : "☀️"}
+            {!themeOverride && selectedTopic.theme === "auto" && <span className="theme-auto-tag">自动</span>}
           </span>
+          <button
+            className={`theme-toggle-btn ${themeOverride ? "overridden" : ""}`}
+            onClick={() => {
+              if (themeOverride === null) {
+                setThemeOverride(resolvedTheme === "dark" ? "light" : "dark");
+              } else {
+                setThemeOverride(null);
+              }
+            }}
+            title={`${themeOverride ? "点击恢复自动" : "点击切换主题"}\n当前: ${currentThemeSource}`}
+          >
+            {themeOverride === "dark" || (!themeOverride && resolvedTheme === "dark")
+              ? <BulbOutlined />
+              : <BulbFilled />}
+          </button>
           <div className="mode-badges">
             {activePreset && (
               <span className="mode-badge preset-badge">
@@ -705,6 +730,7 @@ const AITest = () => {
               onChange={(val) => {
                 const topic = TOPICS.find((t) => t.key === val);
                 setSelectedTopic(topic);
+                setThemeOverride(null);
               }}
               style={{ width: 160 }}
             >
