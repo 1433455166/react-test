@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "ajv": "^8.0.0",
     "@ant-design/icons": "^4.8.0",
+    "ajv": "^8.0.0",
     "antd": "latest",
     "axios": "^1.5.0",
     "dayjs": "^1.11.13",
+    "http-proxy-middleware": "^4.2.0",
     "lz-js-tools": "^1.0.2",
     "moment": "^2.29.4",
     "react": "^19.0.0",
@@ -53,5 +54,6 @@
     "sass": "^1.83.4",
     "sass-loader": "^13.2.0",
     "typescript": "^5.8.2"
-  }
+  },
+  "proxy": "http://localhost:8000"
 }

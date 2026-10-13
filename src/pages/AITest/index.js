@@ -254,10 +254,10 @@ const apiOptions = [
     apiKey: "sk-mU8oCBy3Va4vZ0ttpegWaq8dB9eyEsMTvW5ojnPLP3JkKPCG"
   },
   {
-    value: "http://localhost:8000/",
+    value: "",
     label: "本地Grok2API",
-    description: "http://localhost:8000/",
-    apiKey: "vlv1TRJV4zByXMub"
+    description: "http://192.168.31.106:8000/v1",
+    apiKey: "g2a_5a99e9e12ba3_SdSk2Ua4ijYZVApy-x0eWiAnrn7b-9cK"
   },
 ];
 
