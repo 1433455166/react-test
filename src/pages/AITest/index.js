@@ -17,6 +17,8 @@ import {
   PictureOutlined,
   BulbOutlined,
   BulbFilled,
+  CopyOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import "./index.css";
 
@@ -247,6 +249,12 @@ const MessageContent = ({ item }) => {
 };
 
 const apiOptions = [
+    {
+    value: "http://154.84.59.41:8317/",
+    label: "云服务 cliproxyapi",
+    description: "http://154.84.59.41:8317/",
+    apiKey: "sk-CSjJcWq1oCckcpwd5eg8koZlPXh1yN8GjR3rMbatApJUKAwt"
+  },
   {
     value: "http://localhost:8317/",
     label: "本地 cliproxyapi",
@@ -285,6 +293,7 @@ const AITest = () => {
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const recognitionRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   const scrollToBottom = useCallback(() => {
     if (messagesEndRef.current) {
@@ -301,7 +310,10 @@ const AITest = () => {
     const handler = (e) => setSystemTheme(e.matches ? "dark" : "light");
     handler(darkModeMq);
     darkModeMq.addEventListener("change", handler);
-    return () => darkModeMq.removeEventListener("change", handler);
+    return () => {
+      darkModeMq.removeEventListener("change", handler);
+      abortControllerRef.current?.abort();
+    };
   }, []);
 
   const resolvedTheme = (() => {
@@ -353,6 +365,11 @@ const AITest = () => {
     } finally {
       setIsLoadingModels(false);
     }
+  };
+
+  const handleStop = () => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
   };
 
   const handleApiChange = (value) => {
@@ -496,7 +513,17 @@ const AITest = () => {
     const aiMessageId = Date.now() + 1;
     let aiContent = "";
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
+      const historyMessages = messages
+        .filter((m) => m.type === "user" || m.type === "ai")
+        .map((m) => ({
+          role: m.type === "user" ? "user" : "assistant",
+          content: m.content,
+        }));
+
       const response = await fetch(`${selectedApi.value}v1/chat/completions`, {
         method: "POST",
         headers: {
@@ -510,10 +537,12 @@ const AITest = () => {
               role: "system",
               content: `当前模式: ${selectedMode}${isLocalMode ? "，本地电脑已接入" : ""}${activePreset ? `，任务类型: ${PRESET_PROMPTS[activePreset].title}` : ""}。请根据用户输入提供相应服务。`
             },
+            ...historyMessages,
             { role: "user", content: inputValue }
           ],
           stream: true
         }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -569,6 +598,7 @@ const AITest = () => {
                 });
               }
             } catch (e) {
+              if (e.name === "AbortError") throw e;
               console.log("JSON parse error:", e);
               throw e;
             }
@@ -576,6 +606,26 @@ const AITest = () => {
         }
       }
     } catch (error) {
+      if (error.name === "AbortError") {
+        if (aiContent) {
+          setMessages((prev) => {
+            const aiIndex = prev.findIndex((msg) => msg.id === aiMessageId);
+            if (aiIndex >= 0) {
+              const newMessages = [...prev];
+              newMessages[aiIndex] = {
+                id: aiMessageId,
+                type: "ai",
+                content: aiContent + "\n\n*（已停止生成）*",
+                timestamp: new Date().toLocaleTimeString(),
+              };
+              return newMessages;
+            }
+            return prev;
+          });
+        }
+        return;
+      }
+
       console.log("error", error);
       let errorMessage = "抱歉，暂时无法连接到AI服务。";
 
@@ -599,12 +649,13 @@ const AITest = () => {
         ]);
       }
     } finally {
+      abortControllerRef.current = null;
       setIsLoading(false);
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent?.isComposing) {
       e.preventDefault();
       handleSend();
     }
@@ -812,18 +863,34 @@ const AITest = () => {
                 />
                 <div className="message-content">
                   <MessageContent item={item} />
-                  <div className="message-time">
-                    {item.mode && <span className="msg-tag">{MODES.find(m=>m.key===item.mode)?.label}</span>}
-                    {item.localMode && <span className="msg-tag local">本地</span>}
-                    {item.preset && <span className="msg-tag preset">{PRESET_PROMPTS[item.preset]?.title}</span>}
-                    <span>{item.timestamp}</span>
+                  <div className="message-actions">
+                    <div className="message-time">
+                      {item.mode && <span className="msg-tag">{MODES.find(m=>m.key===item.mode)?.label}</span>}
+                      {item.localMode && <span className="msg-tag local">本地</span>}
+                      {item.preset && <span className="msg-tag preset">{PRESET_PROMPTS[item.preset]?.title}</span>}
+                      <span>{item.timestamp}</span>
+                    </div>
+                    {item.type === "ai" && (
+                      <button
+                        className="msg-copy-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(item.content).then(
+                            () => message.success("已复制"),
+                            () => message.error("复制失败")
+                          );
+                        }}
+                        title="复制回复"
+                      >
+                        <CopyOutlined />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
             ))}
             {isLoading && (
               <div className="loading-message">
-                <RobotOutlined spin />
+                <LoadingOutlined />
                 <span>AI正在思考...</span>
               </div>
             )}
@@ -946,10 +1013,20 @@ const AITest = () => {
                 rows={1}
               />
               <button
+                className={`send-btn stop-btn ${isLoading ? "active" : ""}`}
+                onClick={handleStop}
+                disabled={!isLoading}
+                title="停止生成"
+                style={{ display: isLoading ? "flex" : "none" }}
+              >
+                <CloseOutlined />
+              </button>
+              <button
                 className={`send-btn ${inputValue.trim() && !isLoading ? "active" : ""}`}
                 onClick={handleSend}
                 disabled={!inputValue.trim() || isLoading}
                 title="发送"
+                style={{ display: isLoading ? "none" : "flex" }}
               >
                 <SendOutlined />
               </button>

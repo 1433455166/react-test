@@ -226,6 +226,8 @@ html[data-theme="dark"] {
   font-size: 14px;
   line-height: 1.6;
   word-break: break-word;
+  user-select: text;
+  cursor: text;
 }
 
 .message-item.user .message-text {
@@ -247,6 +249,8 @@ html[data-theme="dark"] {
 
 .markdown-body {
   word-break: break-word;
+  user-select: text;
+  cursor: text;
 }
 
 .markdown-body h1,
@@ -386,6 +390,39 @@ html[data-theme="dark"] {
 .message-time {
   font-size: 12px;
   color: var(--text-secondary);
+}
+
+.message-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  gap: 8px;
+}
+
+.msg-copy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s, color 0.2s;
+  font-size: 13px;
+}
+
+.message-content:hover .msg-copy-btn {
+  opacity: 1;
+}
+
+.msg-copy-btn:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
 }
 
 .loading-message {

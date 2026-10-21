@@ -170,6 +170,8 @@ function App() {
                         <Route path={`/${router.game}/gobang`} exact component={Game} />
                         <Route path={`/${router.game}/minesweeper`} exact component={Game} />
                         <Route path={`/${router.game}/sudoku`} exact component={Game} />
+                        <Route path={`/${router.game}/meowdoku`} exact component={Game} />
+                        <Route path={`/${router.game}/meowdoku2`} exact component={Game} />
                         <Route path={`/${router.dataBackground}`} exact component={DataBackground} />
                         {pageDataSource.filter((pageData) => pageData?.router).map((page) => {
                             return <Route path={`/${router.dataBackground}/${page.router}`} exact component={DataBackground} key={page.router} />

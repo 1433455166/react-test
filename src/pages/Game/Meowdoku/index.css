@@ -1,0 +1,295 @@
+.meow-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #fff5f7 0%, #fff0f5 50%, #ffe4ec 100%);
+  min-height: 100vh;
+}
+
+.meow-header {
+  margin-bottom: 16px;
+  text-align: center;
+  width: 100%;
+  max-width: 480px;
+}
+
+.meow-title {
+  margin: 0 0 4px 0;
+  color: #d63384;
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.meow-title-icon {
+  display: inline-block;
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px) rotate(-6deg); }
+}
+
+.meow-desc {
+  margin: 0 0 12px 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.meow-info {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+
+.meow-timer {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.meow-mistakes {
+  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.meow-difficulty {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.difficulty-btn {
+  padding: 8px 16px;
+  border: 2px solid #ffd6e0;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #c2185b;
+  transition: all 0.2s ease;
+}
+
+.difficulty-btn:hover {
+  border-color: #d63384;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(214, 51, 132, 0.2);
+}
+
+.difficulty-btn.active {
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+  color: white;
+  border-color: #c44569;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(214, 51, 132, 0.35);
+}
+
+.meow-board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  width: 414px;
+  height: 414px;
+  background-color: #c44569;
+  border: 4px solid #c44569;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(196, 69, 105, 0.3);
+}
+
+.meow-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  background-color: #fffafc;
+  border-right: 1px solid #ffd6e0;
+  border-bottom: 1px solid #ffd6e0;
+  font-size: 26px;
+  transition: background-color 0.1s ease;
+  position: relative;
+}
+
+.meow-cell:hover {
+  background-color: #ffeef3;
+}
+
+.meow-cell.fixed {
+  background-color: #fff0f5;
+  cursor: default;
+}
+
+.meow-cell.fixed:hover {
+  background-color: #fff0f5;
+}
+
+.meow-cell.selected {
+  background-color: #ffd1dc !important;
+  box-shadow: inset 0 0 0 2px #c44569;
+}
+
+.meow-cell.highlighted {
+  background-color: #fff5f8;
+}
+
+.meow-cell.same-icon {
+  background-color: #ffb3c1;
+}
+
+.meow-cell.error .cell-icon {
+  color: #e53935;
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+.meow-cell.border-left {
+  border-left: 3px solid #c44569;
+}
+
+.meow-cell.border-top {
+  border-top: 3px solid #c44569;
+}
+
+.cell-icon {
+  font-size: 28px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.08));
+}
+
+.cell-hints {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  gap: 0;
+}
+
+.hint-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.hint-icon.hidden {
+  visibility: hidden;
+}
+
+.hint-icon.visible {
+  opacity: 0.45;
+}
+
+.meow-cell.selected .hint-icon.visible {
+  opacity: 0.75;
+}
+
+.meow-controls {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.meow-icons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 460px;
+}
+
+.icon-btn {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #ffd6e0;
+  background: white;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 26px;
+  transition: all 0.15s ease;
+}
+
+.icon-btn:hover:not(.disabled) {
+  border-color: #d63384;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(214, 51, 132, 0.25);
+}
+
+.icon-btn:active:not(.disabled) {
+  transform: translateY(0) scale(0.95);
+}
+
+.icon-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: #fafafa;
+  border-color: #eee;
+  filter: grayscale(0.6);
+}
+
+.erase-btn {
+  font-size: 22px;
+}
+
+.restart-btn {
+  padding: 10px 28px;
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(214, 51, 132, 0.35);
+}
+
+.restart-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(214, 51, 132, 0.45);
+}
+
+.restart-btn:active {
+  transform: translateY(0);
+}
+
+.game-status-message {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.win-message {
+  color: #c44569;
+  animation: pop 0.5s ease-out;
+}
+
+.win-big {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}

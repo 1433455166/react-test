@@ -5,6 +5,8 @@ import BouncyBall from "./BouncyBall";
 import Gobang from "./Gobang";
 import Minesweeper from "./Minesweeper";
 import Sudoku from "./Sudoku";
+import Meowdoku from "./Meowdoku";
+import Meowdoku2 from "./Meowdoku2";
 import {
   AppstoreOutlined,
   MailOutlined,
@@ -20,6 +22,10 @@ function Game() {
     const hash = window.location.hash;
     if (hash.includes('/game/sudoku')) {
       setCurrent('sudoku');
+    } else if (hash.includes('/game/meowdoku2')) {
+      setCurrent('meowdoku2');
+    } else if (hash.includes('/game/meowdoku')) {
+      setCurrent('meowdoku');
     } else if (hash.includes('/game/minesweeper')) {
       setCurrent('minesweeper');
     } else if (hash.includes('/game/gobang')) {
@@ -57,6 +63,16 @@ function Game() {
     {
       label: <a href="#/game/sudoku">数独</a>,
       key: "sudoku",
+      icon: <AppstoreOutlined />,
+    },
+    {
+      label: <a href="#/game/meowdoku">🐱 Meowdoku</a>,
+      key: "meowdoku",
+      icon: <AppstoreOutlined />,
+    },
+    {
+      label: <a href="#/game/meowdoku2">🐾 Meowdoku 2</a>,
+      key: "meowdoku2",
       icon: <AppstoreOutlined />,
     },
     {
@@ -108,6 +124,10 @@ function Game() {
         return <Minesweeper />;
       case "sudoku":
         return <Sudoku />;
+      case "meowdoku":
+        return <Meowdoku />;
+      case "meowdoku2":
+        return <Meowdoku2 />;
       default:
         <div />;
     }
