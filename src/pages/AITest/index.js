@@ -9,17 +9,17 @@ import {
   SoundOutlined,
   MoreOutlined,
   EnvironmentOutlined,
-  FileImageOutlined,
   VideoCameraOutlined,
   FileOutlined,
   CloseOutlined,
-  DeleteOutlined,
   PictureOutlined,
   BulbOutlined,
   BulbFilled,
-  CopyOutlined,
   LoadingOutlined,
+  AudioOutlined,
+  AudioMutedOutlined,
 } from "@ant-design/icons";
+import { useVoice, VoiceSettings, TTSToggle } from "./voice";
 import "./index.css";
 
 const { Option } = Select;
@@ -286,14 +286,33 @@ const AITest = () => {
   const [isLocalMode, setIsLocalMode] = useState(false);
   const [activePreset, setActivePreset] = useState(null);
   const [attachments, setAttachments] = useState([]);
-  const [isRecording, setIsRecording] = useState(false);
   const [moreMenuVisible, setMoreMenuVisible] = useState(false);
 
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
-  const recognitionRef = useRef(null);
   const abortControllerRef = useRef(null);
+
+  const handleSendRef = useRef(null);
+
+  const voice = useVoice({
+    onSend: (text) => handleSendRef.current?.(text),
+    onFillInput: (text) => setInputValue(text),
+  });
+
+  const {
+    isRecording,
+    voiceChatMode,
+    ttsPlayingId,
+    ttsVoices,
+    selectedTtsVoice,
+    setSelectedTtsVoice,
+    startVoiceInput,
+    toggleVoiceChat,
+    handleTTSClick,
+    cleanup: voiceCleanup,
+    handleAIReplyDone,
+  } = voice;
 
   const scrollToBottom = useCallback(() => {
     if (messagesEndRef.current) {
@@ -313,6 +332,7 @@ const AITest = () => {
     return () => {
       darkModeMq.removeEventListener("change", handler);
       abortControllerRef.current?.abort();
+      voiceCleanup();
     };
   }, []);
 
@@ -441,63 +461,15 @@ const AITest = () => {
     }, 100);
   };
 
-  const startVoiceInput = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      Modal.warning({
-        title: "语音输入",
-        content: "当前浏览器不支持语音输入功能，请使用 Chrome 或 Edge 浏览器。",
-      });
-      return;
-    }
 
-    if (isRecording) {
-      recognitionRef.current?.stop();
-      setIsRecording(false);
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = "zh-CN";
-    recognition.interimResults = true;
-    recognition.continuous = false;
-
-    recognition.onstart = () => {
-      setIsRecording(true);
-      message.loading({ content: "正在聆听...", key: "voice", duration: 0 });
-    };
-
-    recognition.onresult = (event) => {
-      let transcript = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-      }
-      setInputValue((prev) => (prev ? prev + transcript : transcript));
-      autoResize();
-    };
-
-    recognition.onerror = (event) => {
-      console.log("语音识别错误:", event.error);
-      setIsRecording(false);
-      message.error("语音识别失败，请重试");
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-      message.destroy("voice");
-    };
-
-    recognition.start();
-    recognitionRef.current = recognition;
-  };
-
-  const handleSend = async () => {
-    if (!inputValue.trim() || !selectedApi || !selectedModel) return;
+  const handleSend = useCallback(async (overrideText) => {
+    const text = overrideText !== undefined ? overrideText : inputValue;
+    if (!text.trim() || !selectedApi || !selectedModel) return;
 
     const userMessage = {
       id: Date.now(),
       type: "user",
-      content: inputValue,
+      content: text,
       timestamp: new Date().toLocaleTimeString(),
       attachments: attachments.length > 0 ? [...attachments] : undefined,
       mode: selectedMode,
@@ -506,7 +478,7 @@ const AITest = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
+    if (overrideText === undefined) setInputValue("");
     setAttachments([]);
     setIsLoading(true);
 
@@ -538,7 +510,7 @@ const AITest = () => {
               content: `当前模式: ${selectedMode}${isLocalMode ? "，本地电脑已接入" : ""}${activePreset ? `，任务类型: ${PRESET_PROMPTS[activePreset].title}` : ""}。请根据用户输入提供相应服务。`
             },
             ...historyMessages,
-            { role: "user", content: inputValue }
+            { role: "user", content: text }
           ],
           stream: true
         }),
@@ -651,8 +623,11 @@ const AITest = () => {
     } finally {
       abortControllerRef.current = null;
       setIsLoading(false);
+      handleAIReplyDone(aiContent, aiMessageId);
     }
-  };
+  }, [inputValue, attachments, selectedApi, selectedModel, selectedMode, isLocalMode, activePreset, messages, voice]);
+
+  handleSendRef.current = handleSend;
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent?.isComposing) {
@@ -770,6 +745,11 @@ const AITest = () => {
                 <EnvironmentOutlined /> 本地电脑
               </span>
             )}
+            {voiceChatMode && (
+              <span className="mode-badge voice-chat-badge">
+                <AudioOutlined /> 语音对话
+              </span>
+            )}
           </div>
         </div>
 
@@ -833,6 +813,14 @@ const AITest = () => {
               {isLoadingModels && <Spin size="small" className="loading-spin" />}
             </div>
           )}
+
+          {selectedApi && (
+            <VoiceSettings
+              voices={ttsVoices}
+              value={selectedTtsVoice}
+              onChange={setSelectedTtsVoice}
+            />
+          )}
         </div>
       </div>
 
@@ -871,18 +859,11 @@ const AITest = () => {
                       <span>{item.timestamp}</span>
                     </div>
                     {item.type === "ai" && (
-                      <button
-                        className="msg-copy-btn"
-                        onClick={() => {
-                          navigator.clipboard.writeText(item.content).then(
-                            () => message.success("已复制"),
-                            () => message.error("复制失败")
-                          );
-                        }}
-                        title="复制回复"
-                      >
-                        <CopyOutlined />
-                      </button>
+                      <TTSToggle
+                        item={item}
+                        isPlaying={ttsPlayingId === item.id}
+                        onTTSClick={handleTTSClick}
+                      />
                     )}
                   </div>
                 </div>
@@ -995,6 +976,21 @@ const AITest = () => {
                 onClick={startVoiceInput}
               >
                 <SoundOutlined />
+              </button>
+
+              <button
+                className={`quick-action-btn voice-chat-btn ${voiceChatMode ? "active" : ""}`}
+                title={voiceChatMode ? "关闭语音对话" : "开启语音对话模式"}
+                onClick={() => toggleVoiceChat({
+                  canStart: () => {
+                    if (isLoading) { message.warning("AI 正在回复，请稍候"); return false; }
+                    if (!selectedModel) { message.warning("请先选择模型"); return false; }
+                    return true;
+                  },
+                })}
+              >
+                {voiceChatMode ? <AudioMutedOutlined /> : <AudioOutlined />}
+                <span>{voiceChatMode ? "关闭语音对话" : "语音对话"}</span>
               </button>
             </div>
 
