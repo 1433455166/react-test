@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Select, Avatar, Spin, Dropdown, message, Modal } from "antd";
+import { Select, Spin, Dropdown, message, Modal } from "antd";
 import {
   SendOutlined,
   RobotOutlined,
-  UserOutlined,
   CloudServerOutlined,
   PlusOutlined,
   SoundOutlined,
@@ -19,7 +18,10 @@ import {
   AudioOutlined,
   AudioMutedOutlined,
 } from "@ant-design/icons";
-import { useVoice, VoiceSettings, TTSToggle } from "./voice";
+import { useVoice, VoiceSettings } from "./voice";
+import { MessageBubble } from "./components";
+import { useSendMessage } from "./utils/useSendMessage";
+import { PRESET_PROMPTS } from "./utils/constants";
 import "./index.css";
 
 const { Option } = Select;
@@ -61,192 +63,6 @@ const MODES = [
   { key: "advanced", label: "进阶", icon: <IconSparkles /> },
   { key: "thinking", label: "思考", icon: <IconSparkles /> },
 ];
-
-const PRESET_PROMPTS = {
-  ppt: {
-    title: "PPT创作",
-    placeholder: "请帮我生成一份关于【主题】的PPT大纲，包含标题、副标题和每页要点...",
-    badge: "PPT模式",
-  },
-  video: {
-    title: "AI生视频",
-    placeholder: "请帮我生成一段视频脚本，主题是【描述视频内容和风格】...",
-    badge: "视频模式",
-  },
-  image: {
-    title: "AI生图",
-    placeholder: "请帮我生成一幅图片的描述词，要求【描述画面、风格、色调】...",
-    badge: "绘图模式",
-  },
-};
-
-function renderInline(text) {
-  const nodes = [];
-  const regex = /(\*\*[^*]+\*\*)|(\*[^*]+\*)|(`[^`]+`)|(\[[^\]]+\]\([^)]+\))/g;
-  let lastIndex = 0;
-  let match;
-  let key = 0;
-
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      nodes.push(text.slice(lastIndex, match.index));
-    }
-    const token = match[0];
-    if (token.startsWith("**")) {
-      nodes.push(<strong key={key++}>{token.slice(2, -2)}</strong>);
-    } else if (token.startsWith("`")) {
-      nodes.push(<code key={key++}>{token.slice(1, -1)}</code>);
-    } else if (token.startsWith("[")) {
-      const linkMatch = /\[([^\]]+)\]\(([^)]+)\)/.exec(token);
-      if (linkMatch) {
-        nodes.push(
-          <a key={key++} href={linkMatch[2]} target="_blank" rel="noopener noreferrer">
-            {linkMatch[1]}
-          </a>
-        );
-      }
-    } else if (token.startsWith("*")) {
-      nodes.push(<em key={key++}>{token.slice(1, -1)}</em>);
-    }
-    lastIndex = regex.lastIndex;
-  }
-
-  if (lastIndex < text.length) {
-    nodes.push(text.slice(lastIndex));
-  }
-  return nodes;
-}
-
-function parseMarkdown(md) {
-  const lines = md.split("\n");
-  const blocks = [];
-  let i = 0;
-  let listKey = 0;
-
-  while (i < lines.length) {
-    const line = lines[i];
-
-    if (/^#{1,6}\s/.test(line)) {
-      const level = line.match(/^(#{1,6})\s/)[1].length;
-      const text = line.slice(level);
-      const Tag = `h${level}`;
-      blocks.push(<Tag key={`h-${i}`}>{renderInline(text)}</Tag>);
-      i++;
-      continue;
-    }
-
-    if (/^---+$/.test(line.trim())) {
-      blocks.push(<hr key={`hr-${i}`} />);
-      i++;
-      continue;
-    }
-
-    if (/^>\s/.test(line)) {
-      const quoteLines = [];
-      while (i < lines.length && /^>\s/.test(lines[i])) {
-        quoteLines.push(lines[i].slice(2));
-        i++;
-      }
-      blocks.push(
-        <blockquote key={`q-${i}`}>
-          {quoteLines.map((q, idx) => (
-            <p key={idx}>{renderInline(q)}</p>
-          ))}
-        </blockquote>
-      );
-      continue;
-    }
-
-    if (/^\s*[-*+]\s/.test(line)) {
-      const items = [];
-      while (i < lines.length && /^\s*[-*+]\s/.test(lines[i])) {
-        items.push(lines[i].replace(/^\s*[-*+]\s/, ""));
-        i++;
-      }
-      blocks.push(
-        <ul key={`ul-${listKey++}`}>
-          {items.map((item, idx) => (
-            <li key={idx}>{renderInline(item)}</li>
-          ))}
-        </ul>
-      );
-      continue;
-    }
-
-    if (/^\s*\d+\.\s/.test(line)) {
-      const items = [];
-      while (i < lines.length && /^\s*\d+\.\s/.test(lines[i])) {
-        items.push(lines[i].replace(/^\s*\d+\.\s/, ""));
-        i++;
-      }
-      blocks.push(
-        <ol key={`ol-${listKey++}`}>
-          {items.map((item, idx) => (
-            <li key={idx}>{renderInline(item)}</li>
-          ))}
-        </ol>
-      );
-      continue;
-    }
-
-    if (line.trim() === "") {
-      i++;
-      continue;
-    }
-
-    const paraLines = [line];
-    i++;
-    while (
-      i < lines.length &&
-      lines[i].trim() !== "" &&
-      !/^#{1,6}\s/.test(lines[i]) &&
-      !/^---+$/.test(lines[i].trim()) &&
-      !/^>\s/.test(lines[i]) &&
-      !/^\s*[-*+]\s/.test(lines[i]) &&
-      !/^\s*\d+\.\s/.test(lines[i])
-    ) {
-      paraLines.push(lines[i]);
-      i++;
-    }
-
-    blocks.push(
-      <p key={`p-${i}`}>{renderInline(paraLines.join(" "))}</p>
-    );
-  }
-
-  return blocks;
-}
-
-const MessageContent = ({ item }) => {
-  if (item.type === "user") {
-    return (
-      <div className="message-text">
-        {item.attachments && item.attachments.length > 0 && (
-          <div className="msg-attachments">
-            {item.attachments.map((att, idx) => (
-              <div key={idx} className="msg-attachment">
-                {att.type === "image" ? (
-                  <img src={att.url} alt={att.name} />
-                ) : (
-                  <div className="file-attachment">
-                    <FileOutlined />
-                    <span>{att.name}</span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-        {item.content && <span>{item.content}</span>}
-      </div>
-    );
-  }
-  return (
-    <div className="message-text markdown-body">
-      {parseMarkdown(item.content)}
-    </div>
-  );
-};
 
 const apiOptions = [
     {
@@ -291,7 +107,6 @@ const AITest = () => {
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
-  const abortControllerRef = useRef(null);
 
   const handleSendRef = useRef(null);
 
@@ -313,6 +128,25 @@ const AITest = () => {
     cleanup: voiceCleanup,
     handleAIReplyDone,
   } = voice;
+
+  const { handleSend, abortControllerRef } = useSendMessage({
+    inputValue,
+    attachments,
+    selectedApi,
+    selectedModel,
+    selectedMode,
+    isLocalMode,
+    activePreset,
+    messages,
+    setInputValue,
+    setAttachments,
+    setActivePreset,
+    setIsLoading,
+    setMessages,
+    onReplyDone: handleAIReplyDone,
+  });
+
+  handleSendRef.current = handleSend;
 
   const scrollToBottom = useCallback(() => {
     if (messagesEndRef.current) {
@@ -379,9 +213,11 @@ const AITest = () => {
         })) || []);
       } else {
         setModels([]);
+        message.warning(`获取模型列表失败（HTTP ${response.status}），请检查API服务是否可用`);
       }
     } catch (error) {
       setModels([]);
+      message.warning("获取模型列表失败，请检查API服务是否可用");
     } finally {
       setIsLoadingModels(false);
     }
@@ -395,12 +231,20 @@ const AITest = () => {
   const handleApiChange = (value) => {
     const apiOption = apiOptions.find((option) => option.value === value);
     setSelectedApi(apiOption);
+    setSelectedModel("");
     setMessages([]);
   };
 
   const handleModelChange = (value) => {
     setSelectedModel(value);
     setMessages([]);
+  };
+
+  // 下拉打开时若列表为空（此前拉取失败）则自动重试
+  const handleModelsDropdownOpen = (open) => {
+    if (open && selectedApi && models.length === 0 && !isLoadingModels) {
+      fetchModels();
+    }
   };
 
   const autoResize = () => {
@@ -461,173 +305,6 @@ const AITest = () => {
     }, 100);
   };
 
-
-  const handleSend = useCallback(async (overrideText) => {
-    const text = overrideText !== undefined ? overrideText : inputValue;
-    if (!text.trim() || !selectedApi || !selectedModel) return;
-
-    const userMessage = {
-      id: Date.now(),
-      type: "user",
-      content: text,
-      timestamp: new Date().toLocaleTimeString(),
-      attachments: attachments.length > 0 ? [...attachments] : undefined,
-      mode: selectedMode,
-      localMode: isLocalMode,
-      preset: activePreset,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    if (overrideText === undefined) setInputValue("");
-    setAttachments([]);
-    setIsLoading(true);
-
-    const aiMessageId = Date.now() + 1;
-    let aiContent = "";
-
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    try {
-      const historyMessages = messages
-        .filter((m) => m.type === "user" || m.type === "ai")
-        .map((m) => ({
-          role: m.type === "user" ? "user" : "assistant",
-          content: m.content,
-        }));
-
-      const response = await fetch(`${selectedApi.value}v1/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${selectedApi.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: selectedModel,
-          messages: [
-            {
-              role: "system",
-              content: `当前模式: ${selectedMode}${isLocalMode ? "，本地电脑已接入" : ""}${activePreset ? `，任务类型: ${PRESET_PROMPTS[activePreset].title}` : ""}。请根据用户输入提供相应服务。`
-            },
-            ...historyMessages,
-            { role: "user", content: text }
-          ],
-          stream: true
-        }),
-        signal: controller.signal,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("event: error")) continue;
-
-          if (line.startsWith("data: ")) {
-            const dataStr = line.slice(6);
-            if (dataStr === "[DONE]") break;
-
-            try {
-              const data = JSON.parse(dataStr);
-              if (data.error) throw new Error(data.error.message || "API请求失败");
-
-              const content = data.choices?.[0]?.delta?.content;
-              if (content !== undefined) {
-                aiContent += content;
-                setMessages((prev) => {
-                  const aiIndex = prev.findIndex((msg) => msg.id === aiMessageId);
-                  if (aiIndex >= 0) {
-                    const newMessages = [...prev];
-                    newMessages[aiIndex] = {
-                      id: aiMessageId,
-                      type: "ai",
-                      content: aiContent,
-                      timestamp: new Date().toLocaleTimeString(),
-                    };
-                    return newMessages;
-                  } else {
-                    return [
-                      ...prev,
-                      {
-                        id: aiMessageId,
-                        type: "ai",
-                        content: aiContent,
-                        timestamp: new Date().toLocaleTimeString(),
-                      },
-                    ];
-                  }
-                });
-              }
-            } catch (e) {
-              if (e.name === "AbortError") throw e;
-              console.log("JSON parse error:", e);
-              throw e;
-            }
-          }
-        }
-      }
-    } catch (error) {
-      if (error.name === "AbortError") {
-        if (aiContent) {
-          setMessages((prev) => {
-            const aiIndex = prev.findIndex((msg) => msg.id === aiMessageId);
-            if (aiIndex >= 0) {
-              const newMessages = [...prev];
-              newMessages[aiIndex] = {
-                id: aiMessageId,
-                type: "ai",
-                content: aiContent + "\n\n*（已停止生成）*",
-                timestamp: new Date().toLocaleTimeString(),
-              };
-              return newMessages;
-            }
-            return prev;
-          });
-        }
-        return;
-      }
-
-      console.log("error", error);
-      let errorMessage = "抱歉，暂时无法连接到AI服务。";
-
-      if (error.message?.includes("TLS") || error.message?.includes("SSL")) {
-        errorMessage = "SSL/TLS连接失败，请检查网络环境或尝试使用HTTP协议。";
-      } else if (error.message?.includes("403")) {
-        errorMessage = "API密钥无效或权限不足，请检查密钥配置。";
-      } else if (error.message) {
-        errorMessage = `请求失败: ${error.message}`;
-      }
-
-      if (!aiContent) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: aiMessageId,
-            type: "ai",
-            content: errorMessage,
-            timestamp: new Date().toLocaleTimeString(),
-          },
-        ]);
-      }
-    } finally {
-      abortControllerRef.current = null;
-      setIsLoading(false);
-      handleAIReplyDone(aiContent, aiMessageId);
-    }
-  }, [inputValue, attachments, selectedApi, selectedModel, selectedMode, isLocalMode, activePreset, messages, voice]);
-
-  handleSendRef.current = handleSend;
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent?.isComposing) {
@@ -800,6 +477,7 @@ const AITest = () => {
               <Select
                 value={selectedModel}
                 onChange={handleModelChange}
+                onOpenChange={handleModelsDropdownOpen}
                 style={{ width: 200 }}
                 placeholder="请选择AI模型"
                 loading={isLoadingModels}
@@ -835,39 +513,14 @@ const AITest = () => {
               </div>
             )}
             {messages.map((item) => (
-              <div
-                className={`message-item ${item.type}`}
+              <MessageBubble
                 key={item.id}
-              >
-                <Avatar
-                  icon={
-                    item.type === "user" ? (
-                      <UserOutlined />
-                    ) : (
-                      <RobotOutlined />
-                    )
-                  }
-                  className={`avatar ${item.type}`}
-                />
-                <div className="message-content">
-                  <MessageContent item={item} />
-                  <div className="message-actions">
-                    <div className="message-time">
-                      {item.mode && <span className="msg-tag">{MODES.find(m=>m.key===item.mode)?.label}</span>}
-                      {item.localMode && <span className="msg-tag local">本地</span>}
-                      {item.preset && <span className="msg-tag preset">{PRESET_PROMPTS[item.preset]?.title}</span>}
-                      <span>{item.timestamp}</span>
-                    </div>
-                    {item.type === "ai" && (
-                      <TTSToggle
-                        item={item}
-                        isPlaying={ttsPlayingId === item.id}
-                        onTTSClick={handleTTSClick}
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
+                item={item}
+                modes={MODES}
+                presetPrompts={PRESET_PROMPTS}
+                isTtsPlaying={ttsPlayingId === item.id}
+                onTTSClick={handleTTSClick}
+              />
             ))}
             {isLoading && (
               <div className="loading-message">
@@ -1019,7 +672,7 @@ const AITest = () => {
               </button>
               <button
                 className={`send-btn ${inputValue.trim() && !isLoading ? "active" : ""}`}
-                onClick={handleSend}
+                onClick={() => handleSend()}
                 disabled={!inputValue.trim() || isLoading}
                 title="发送"
                 style={{ display: isLoading ? "none" : "flex" }}

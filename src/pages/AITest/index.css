@@ -377,6 +377,19 @@ html[data-theme="dark"] {
   font-weight: 600;
 }
 
+.markdown-body tr:nth-child(even) td {
+  background: var(--bg-chat);
+}
+
+.markdown-body .md-table-wrap {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.markdown-body .md-table-wrap table {
+  margin: 0;
+}
+
 .markdown-body img {
   max-width: 100%;
   border-radius: 8px;
@@ -929,4 +942,74 @@ html[data-theme="dark"] .quick-action-btn.active-preset {
 .voice-chat-badge {
   background: linear-gradient(135deg, #10b981, #059669);
   color: #fff;
+}
+
+.ai-generated-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.ai-image-wrapper {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ai-image-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.ai-image-wrapper img {
+  display: block;
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+}
+
+.ai-image-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.ai-image-wrapper:hover .ai-image-actions {
+  opacity: 1;
+}
+
+.ai-image-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.ai-image-btn:hover {
+  background: #fff;
+}
+
+html[data-theme="dark"] .ai-image-btn {
+  background: rgba(255, 255, 255, 0.85);
+  color: #1a1a1a;
 }
